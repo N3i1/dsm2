@@ -1,0 +1,206 @@
+#!/bin/bash
+#
+# Description: Compile dsm2 for a given database.
+#
+# Author: Neil C
+#
+# Dependencies: 
+#
+#	1. The ENV can be set by calling ". oraenv". Database entry needed in /etc/oratab
+#	2. Connect to database as SYSDBA
+#
+
+export ORAENV_ASK=NO
+
+HEADERFILE_NAME="ksuseInfo.h"
+
+function usage() {
+	printf "\n"
+ 	printf "%s\n\t"     "$( basename $0 ) requires:"
+ 	printf "%s\n\t"     "-d DB INSTANCE_NAME"
+ exit 1;
+}
+
+#
+# Get IPC dump from database
+#
+getIpcInfo(){
+getIpcInfo=`sqlplus -S / as sysdba << EOF
+	oradebug setmypid
+ 	oradebug ipc
+ 	oradebug tracefile_name
+ exit
+EOF`
+printf "%s" ${getIpcInfo} | grep trc  | sed -e 's/[^/]*\//\//'
+}
+
+#
+# Populates users struct with session hex addresses
+#
+getAddrInfo(){
+	getAddrInfo=`sqlplus -S  / as sysdba << EOF
+		set heading off
+ 		set pagesize 10000
+ 		set feedback off
+		select 'const int *users[]={ ' from dual;
+		select  '0x0,' from dual;
+ 		select '0x'||addr||',' from x\\$ksuse;
+ 		select  '0x0};' from dual;
+ 	exit
+EOF`
+printf "%s\n" "${getAddrInfo}" >> ${HEADERFILE_NAME}
+} 
+
+#
+# Gets SHMID
+#
+getShmid(){
+	SHMID=$( $ORACLE_HOME/perl/bin/perl -ne 'print && exit if $c==2; \
+        $c++ if /Shmid/;' $TRACEFILE | awk '{print $3}' )
+	printf "%s\n" "#define SHMID $SHMID" >> ${HEADERFILE_NAME}
+}
+
+#
+# SGA base address
+#
+getSgaAddy(){
+	SGAADDY=$( $ORACLE_HOME/perl/bin/perl -ne 'print && exit if $c==2; \
+        $c++ if /Shmid/;' $TRACEFILE | awk '{print $4}' )
+	printf "%s\n" "#define SGA_ADDY $SGAADDY" >> ${HEADERFILE_NAME}
+}
+
+#
+# Find databases PMON proccess number
+#
+getOspid(){
+	OSPID=$(ps -ef | awk '/[p]mon_'"${DBNAME}"'/{print $2}')
+	printf "%s\n" "#define PMON_PID ${OSPID}" > ${HEADERFILE_NAME}
+}
+
+#
+# Gets the DB version
+#
+getOracleVersion(){
+	getOracleVersion=`sqlplus -S / as sysdba << EOF
+		set heading off
+ 		set pagesize 10000
+ 		set feedback off
+		select version  from v\\$instance;
+ 	exit
+EOF`
+	ORA_VER=$(printf "%s\n" ${getOracleVersion})
+} 
+
+findDBVersion(){
+getOracleVersion
+if [ $? != 0 ];then
+	printf "%s\n" "Problem running version"
+	exit 1
+fi
+if [[ $ORA_VER == "12.2.0.1.0" ]]; then
+	VERSION=ORA_VER_12201
+elif [[ $ORA_VER == "12.1.0.2.0" ]]; then
+	VERSION=ORA_VER_12102
+elif [[ $ORA_VER == "12.1.0.1.0" ]]; then
+	VERSION=ORA_VER_12101
+else
+    printf "%s\n" "Unsupported DSMA Oracle version "
+    exit 1
+fi
+}
+
+getDBMemoryModel(){
+	getDBMemoryModel=`sqlplus -S / as sysdba << EOF
+		set heading off
+		select value from v\\$parameter where name='memory_target';
+ 	exit
+EOF`
+
+	SGA_MEMORY=$(printf "%s\n" ${getDBMemoryModel})
+
+if [[ $SGA_MEMORY == 0 ]]; then
+	SGA_MEM="ASMM"
+else
+	SGA_MEM="AMM"
+fi
+}
+
+#
+# main functions for AMM and ASMM
+#
+
+initASMM(){
+    getOspid
+    TRACEFILE=$( getIpcInfo );
+    getShmid
+    getSgaAddy 
+    getAddrInfo
+}
+
+initAMM(){
+    getOspid
+    printf "%s\n" "#define SHMID 0" >> ${HEADERFILE_NAME}
+    printf "%s\n" "#define SGA_ADDY 0" >> ${HEADERFILE_NAME}
+    getAddrInfo
+}
+
+generate_init(){
+	findDBVersion
+	getDBMemoryModel
+	if [[ SGA_MEM="ASMM" ]]; then
+		initASMM
+	
+	elif [[ SGA_MEM="AMM" ]]; then
+		initAMM
+	else
+		printf "%s\n" "Unsupported SGA version "
+	fi
+	#TODO check before removing
+	#/usr/bin/rm ${HEADERFILE_NAME}
+	#/usr/bin/rm ${TRACEFILE}
+}
+
+###########################################################
+#
+# MAIN
+#
+###########################################################
+
+OPTSTRING="hd:v:m:"
+
+while getopts $OPTSTRING opt
+do
+	case $opt in
+  	d) DBNAME=$OPTARG ;;
+  	h) usage ;;
+  	*) usage ;;
+  	esac
+done
+
+if [[ -z $DBNAME ]]; then
+  	usage
+  	exit
+fi
+
+export ORACLE_SID=$DBNAME
+. oraenv >> /dev/null
+
+generate_init
+ORACLE_VERSION=${VERSION}_${SGA_MEM}
+if [[ $? == 0 ]];then
+    gcc -w main.c linker.c maps.c ksuse.c -D ${ORACLE_VERSION} -o  dsm2.${DBNAME} -lrt
+else
+    printf "Error creating DSM2"
+fi
+
+
+
+unset ORAENV_ASK
+unset ORACLE_SID
+
+printf "%s\n" "DSM2 has been created for ${DBNAME}"
+
+
+
+
+

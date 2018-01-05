@@ -1,6 +1,10 @@
 # Prerequisites
 *.d
 
+nbproject
+Makefile
+ksuseInfo.h
+
 # Object files
 *.o
 *.ko
