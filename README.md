@@ -90,16 +90,6 @@ dsm2:> help
 dsm2:> show
 ```
 
- * Show only active sessions
-```bash
-dsm2:> show active
-```
-
- * Show only INACTIVE sessions
-```bash
-dsm2:> show inactive
-```
-
  * Show detailed stats for a given session
 ```bash
 dsm2:> report <SID>
