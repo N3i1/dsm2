@@ -175,7 +175,7 @@ void updateKsuseMetadata(Ksuse* ksuse, unsigned int* latchFree){
     /*Event class value*/
     ksuse->ksledClassName = *(waitClassGroup + (ksuse->ksledClassid) );
     /*Command*/
-    ksuse->oct = *(command + (*(int*) (ksuse->addy+KSUUDOCT )));
+    ksuse->oct = *(command + (*(char*)(ksuse->addy+KSUUDOCT )));//*(command +  (*(int*)(ksuse->addy+KSUUDOCT )));
     /*OS PID*/
     ksuse->pid = strtol(ksuse->addy+KSUSEPID, NULL, 0);
     /**/
