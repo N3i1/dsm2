@@ -240,7 +240,7 @@ int main(int argc, char** argv) {
                 Node* node = getMatchingNode(&ksuse_ll, (COMPARE)findKsuseBySID, &sid);
                 ksuse = node->data;
                 /*Update and display metadata*/
-                updateKsuseMetadata(&ksuse, &latchFree);
+                updateKsuseMetadata(ksuse, &latchFree);
                 if (latchFree == 1)
                     printKsuseVerboseLatch(ksuse);
                 else
@@ -259,6 +259,7 @@ int main(int argc, char** argv) {
                         /*Check to ensure our session hasn't ended*/
                         if (ksuse->seq <  ksuse->pseq) {
                             printf("Session has ended"); 
+                            //TODO Let's not exist, return to prompt
                             return (EXIT_SUCCESS);
                         }
                         //TODO Allow user to choose delay
@@ -289,6 +290,7 @@ int main(int argc, char** argv) {
     
     return (EXIT_SUCCESS);
 }
+//TODO unmap mmeeory mapped files
 
 void sigHandler(int sig) {
 	stop = 1;
