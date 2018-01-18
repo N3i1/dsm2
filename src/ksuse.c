@@ -126,7 +126,8 @@ int initKsuse(Ksuse* ksuse) {
     ksuse->opcP2 = NULL;
     ksuse->opcP3 = NULL;
     ksuse->ksledClassid = 0;
-    ksuse->oct = NULL;
+    ksuse->oct = 0;
+    ksuse->octName = NULL;
     ksuse->pid = 0;
     ksuse->sql = 0;
     ksuse->sqh = 0;
@@ -175,7 +176,8 @@ void updateKsuseMetadata(Ksuse* ksuse, unsigned int* latchFree){
     /*Event class value*/
     ksuse->ksledClassName = *(waitClassGroup + (ksuse->ksledClassid) );
     /*Command*/
-    ksuse->oct = *(command + (*(int*) (ksuse->addy+KSUUDOCT )));
+    ksuse->oct = ksuse->addy+KSUUDOCT;
+    ksuse->octName = *(command + *(ksuse->oct));
     /*OS PID*/
     ksuse->pid = strtol(ksuse->addy+KSUSEPID, NULL, 0);
     /**/
@@ -256,7 +258,7 @@ void printKsuseVerboseLatch(Ksuse* ksuse) {
 	ksuse->latch,
 	ksuse->opcP3,
 	ksuse->p3,
-	ksuse->oct,
+	ksuse->octName,
 	ksuse->pid,
 	ksuse->sqh,
 	ksuse->pha,
@@ -273,7 +275,7 @@ void printKsuseVerbose(Ksuse* ksuse) {
 	ksuse->p2,
 	ksuse->opcP3,
 	ksuse->p3,
-	ksuse->oct,
+	ksuse->octName,
 	ksuse->pid,
 	ksuse->sqh,
 	ksuse->pha,
