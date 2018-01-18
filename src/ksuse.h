@@ -42,7 +42,8 @@ typedef struct _ksuse {
 	short opcnum;	
 	int ksledClassid; 
 	char *ksledClassName; 
-	char *oct;   
+	char* oct;
+        char *octName;
 	char *lna;    
 	char *pnm;	
 	char *opcP1;    
