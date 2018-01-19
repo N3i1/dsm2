@@ -6,7 +6,7 @@ How can I Contribute?
 
  Please raise a pull request
 
-###Reporting Bugs
+### Reporting Bugs
 
  Please raise these via an issue
 
