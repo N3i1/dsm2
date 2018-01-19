@@ -104,7 +104,15 @@ void initList(LinkedList *list);
 int addMapstoAddySpace(LinkedList *list);
 
 /**
- * Free's memory for  agiven Linked Lists
+ * 
+ * @param list
+ * @return 
+ */
+
+int removeMapsFromAddySpace(LinkedList *list);
+
+/**
+ * Free's memory for a given Linked Lists
  *
  * @param list
  * @param RELEASE ptr to function which releases Node
@@ -118,3 +126,5 @@ void releaseLinkedList(LinkedList *list, RELEASE release);
  * @return SUCCESS or FAILURE
  */
 int deleteNode(LinkedList *pmonMapslist);
+
+int deleteNodeInList(LinkedList *list);

@@ -36,7 +36,7 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list){
 
     if((fd = fopen(name, "r")) == NULL){
         printf("error");
-        return -1;
+        return (EXIT_FAILURE);
     }
 
     while (getline(&line, &len, fd) != -1) {
@@ -57,12 +57,18 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list){
             maps->lowAddr = start;
             maps->highAddr = end;
             maps->keep = 0;
+            maps->length = 0;
             addHead(list, maps);
             //printf("## After AddHead: Node:%p lowAddr:%p, highAddr:%p and filename:%s\n", maps, maps->lowAddr, maps->highAddr, maps->name);
         }    
     }
-    return 0;
+    if (close(fd == -1 )){
+        printf("Failed to close %s", fd);
+        return (EXIT_FAILURE);
+    }
+    return (EXIT_SUCCESS);
 }
+
 
 void displayMmaps(Mmaps *maps){
     printf("## keep: %d lowAddr:%p, highAddr:%p and filename:%s\n", 
@@ -74,47 +80,71 @@ void setKeep(Mmaps *maps){
     maps->keep = 1;
 }
 
+
 int isKeepSet(Mmaps *maps){
     if(maps->keep == 1){
         //printf("keep: %d lowAddr:%p, highAddr:%p\n", mInfo->keep, mInfo->lowAddr, mInfo->highAddr);
-        return 0;
+        return (EXIT_SUCCESS);
     }
     else{
-        return 1;
+        return (EXIT_FAILURE);
         //printf("Remove: %d Addr:%p\n", mInfo->keep, mInfo);
     }
 }
 
+
 int mapFileToAddr(Mmaps *maps){
+    
     struct stat sb;
     size_t length = 0;
     int amm_fd = 0;
     int amm_size;
     void* ammAddr = NULL;
     void* ammBase = NULL;
-    /*Open file in read only mode*/
-
-    amm_fd = shm_open(maps->name, O_RDONLY, 0666);
     
+    /*Open file in read only mode to be able to get file size*/
+    //TODO add check for map->name to avoid calling shm_open for same file
+    amm_fd = shm_open(maps->name, O_RDONLY, 0666);  
     if (amm_fd == -1) {
         printf("dsm2: Shared memory failed:\n");
-        return -1;
+        return (EXIT_FAILURE);
     }
+    
     /*Retrieve meta data about the given file*/
     if (fstat(amm_fd, &sb) == -1) {          
         printf("dsm2: fstat failed:\n");
-        return -1;
+        return (EXIT_FAILURE);
     }
-    /*We use the lowAddr as our point in which to map too*/
+    /*
+     * We use the lowAddr as our point in which to map too
+     */
     ammAddr = maps->lowAddr;
     length = sb.st_size;
     amm_size = length;
-    /*map file into our processes address*/
+    maps->length = amm_size;
+    /*
+     * map file into our processes address
+     */
     ammBase = mmap(ammAddr, amm_size, PROT_READ, MAP_SHARED | MAP_FIXED , amm_fd, 0);
-    if (ammBase == MAP_FAILED) {
+    if (ammBase == -1) {
         printf("dsm2: Map failed:\n");
         printf("Unable to map: %s, Addy: %p \n", maps->name, maps->lowAddr);
-        return -1;
+        return (EXIT_FAILURE);
     }
-    return 0;
+    if (close(amm_fd == -1 )){
+        printf("Failed to close %s", amm_fd);
+        return (EXIT_FAILURE);
+    }
+    
+    return (EXIT_SUCCESS);
+}
+
+
+int unmapFileFromAddr(Mmaps *maps){
+    if(munmap(maps->name, maps->length) == -1){
+        return(EXIT_FAILURE);
+    }
+    else {
+        return(EXIT_SUCCESS);
+    }
 }

@@ -40,16 +40,24 @@
     #include "12201.h"
 #endif
 
-#define FORMAT_VERBOSE_LATCH "WAIT# %d waiting for event: '%s' P1:'%s'=%lld P2:'%s'=%s P3:%s'=%lld\n\t" \
-							 "command=%s ospid=%d sqlhv=%u psqlhv=%u Class:%s\n"
-#define FORMAT_VERBOSE "WAIT# %d waiting for event: '%s' P1:'%s'=%lld P2:'%s'=%lld P3:'%s'=%lld\n\t" \
-					   "command=%s ospid=%d sqlhv=%u psqlhv=%u Class:%s\n"
+#define FORMAT_VERBOSE_LATCH "Waiting for event: '%s' P1:'%s'=%lld P2:'%s'=%s P3:%s'=%lld\n\t" \
+    "command=%s ospid=%d sqlhv=%u psqlhv=%u Class:%s\n"
+
+
+#define FORMAT_VERBOSE "Waiting for event: '%s' P1:'%s'=%lld P2:'%s'=%lld P3:'%s'=%lld\n\t" \
+    "command=%s ospid=%d sqlhv=%u psqlhv=%u Class:%s\n"
+
+
 #define FORMAT_SUMMARY_TITLE "%4s %20.30s %35.45s %30s %11s %10s\n"
+
+
 #define FORMAT_SUMMARY "%4d %-35.33s %-41.50s %10d %10s %10s\n"
+
 
 void displayAmmMmaps(AmmInfo *mInfo){
     printf("Base:%p lowAddr:%p, highAddr:%p and filename:%s\n", mInfo, mInfo->ammLowAddy, mInfo->ammHighAddy, mInfo->ammName);
 }
+
 
 int findKsuseBySID(Ksuse* ksuse_ll, Ksuse* ksuse){
     if( ksuse_ll->sid  == ksuse->sid){
@@ -59,11 +67,14 @@ int findKsuseBySID(Ksuse* ksuse_ll, Ksuse* ksuse){
         return -1;
 
 }
+
+
 int checkforMmaps(Mmaps *maps, AmmInfo *mInfo){
     if (strcmp(mInfo->ammName, maps->name) == 0)
         return 0;
     else{ return 1;}
 }
+
 
 AmmInfo* AddMaps(Mmaps *maps){
     AmmInfo* mInfo = (AmmInfo*) malloc(sizeof(struct _ammInfo));
@@ -81,6 +92,7 @@ int compareSessionAddy(Ksuse *s1, Ksuse *s2){
         //return strcmp(s1->addy, s2->addy);
 }
 
+
 int compareAddy(Ksuse *s, Mmaps *mInfo){
     if( s->addy >= mInfo->lowAddr && s->addy <= mInfo->highAddr){
         //printf("Session:%p\n", s->addy);
@@ -90,6 +102,7 @@ int compareAddy(Ksuse *s, Mmaps *mInfo){
     else
         return -1;
 }
+
 
 void displayKsuseInfo(Ksuse *s){//, AmmInfo *mInfo){
     //if(a_option  == NULL){
@@ -142,6 +155,7 @@ int initKsuse(Ksuse* ksuse) {
     return 0;
     }
 
+
 void updateKsuseMetadata(Ksuse* ksuse, unsigned int* latchFree){
     const char sessionState[][10]={"INACTIVE", "ACTIVE", "SNIPED", "SNIPED", "KILLED"};
     /*
@@ -168,7 +182,7 @@ void updateKsuseMetadata(Ksuse* ksuse, unsigned int* latchFree){
     if (strcmp(ksuse->opc, "latch free" ) == 0) {
     	ksuse->latch= *(latch + (ksuse->p2));
         /*Set latchfree so we know to print P2 as a string*/
-        *latchFree = 1;
+        *latchFree = 0;
     }
     ksuse->opcP3 = sessKsledInfo[ksuse->opcnum].ksledP3;
     /*Event class id*/
@@ -248,9 +262,9 @@ void printKsuseSummary(Ksuse* ksuse) {
     }
 }
 
+
 void printKsuseVerboseLatch(Ksuse* ksuse) {
     printf(FORMAT_VERBOSE_LATCH,
-    	ksuse->seq,
 	ksuse->opc,
 	ksuse->opcP1,
 	ksuse->p1,
@@ -265,9 +279,9 @@ void printKsuseVerboseLatch(Ksuse* ksuse) {
 	ksuse->ksledClassName);
 }
 
+
 void printKsuseVerbose(Ksuse* ksuse) {
-    printf(FORMAT_VERBOSE,  
-    	ksuse->seq,
+    printf(FORMAT_VERBOSE,
 	ksuse->opc,
 	ksuse->opcP1,
 	ksuse->p1,

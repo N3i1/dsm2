@@ -23,6 +23,7 @@ typedef struct maps {
     unsigned long lowAddr;
     unsigned long highAddr;
     int keep;
+    int length;
 } Mmaps;
 
 typedef struct _linkedList LinkedList;
@@ -71,6 +72,14 @@ int isKeepSet(Mmaps *maps);
  * Maps given file into address space
  * 
  * @param maps
- * @return 
+ * @return 0 on success -1 on failure
  */
 int mapFileToAddr(Mmaps *maps);
+
+/**
+ * Unmaps given file into address space
+ * 
+ * @param maps
+ * @return 0 on success -1 on failure
+ */
+int unmapFileFromAddr(Mmaps *maps);
