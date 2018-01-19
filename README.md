@@ -34,21 +34,17 @@ through the SGA.
 
 * extract dsm2 
 
-```bash
-$> tar -zxvf dsm2-*.tar.gz
-
-or
-
+```
 $> gunzip dsm2-*.zip
 ```
 
- *  Set the permission of initdsm2.bsh
+ *  Set the permission of compile_dsm2.bsh
 
 ```bash
-$> chmod 775 initdsm2.bsh
+$> chmod 775 compile_dsm2.bsh
 ``` 
 
- *  Run initdsm2.bsh to compile for a given database
+ *  Run compile_dsm2.bsh for a given database
 
 ```bash
 
@@ -78,12 +74,22 @@ dsm2:> help
 dsm2:> show
 ```
 
+* Show only active sessions
+```bash
+dsm2:> show active
+```
+
+ * Show only INACTIVE sessions
+```bash
+dsm2:> show inactive
+```
+
  * Show detailed stats for a given session
 ```bash
 dsm2:> report <SID>
 ```
 
-## LICENCE
+### LICENCE
 
 Dsm2 is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
