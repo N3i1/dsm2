@@ -17,8 +17,9 @@ through the SGA.
  Any Linux distro upto kernel v4.1 running Oracle versions >= 12.1.0.1
  
 ### SAMPLE OUTPUT
-
 ![alt tag](screenshots/dsm2SummaryView.JPG)
+
+Running "report SID" you can get more detailed metrics:
 	
 ![alt tag](screenshots/dsm2ProfileView.JPG)
 	
