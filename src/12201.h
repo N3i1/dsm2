@@ -1857,7 +1857,6 @@ char waitClassGroup[14][30]={
  "" };
 
 char command[][100]={
-
 "",
 "CREATE TABLE",
 "INSERT",

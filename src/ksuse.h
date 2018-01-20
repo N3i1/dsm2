@@ -22,8 +22,13 @@ typedef struct _ammInfo {
         int inUse;
 } AmmInfo;
 
+
 typedef struct maps Mmaps;
+
+
 typedef struct _node Node; 
+
+
 typedef struct _linkedList LinkedList;
 
 /*
@@ -71,7 +76,9 @@ typedef struct _ksuse {
  
 void displayAmmMmaps(AmmInfo *mInfo);
 
+
 int checkforMmaps(Mmaps *maps, AmmInfo *mInfo);
+
 
 AmmInfo* AddMaps(Mmaps *maps);
 
@@ -83,7 +90,8 @@ AmmInfo* AddMaps(Mmaps *maps);
  * @return 
  */
 int compareAddy(Ksuse *s, Mmaps *mInfo);
-    
+  
+
 int compareSessionAddy(Ksuse *s1, Ksuse *s2);
 
 /**
@@ -116,6 +124,7 @@ void diff(struct timespec start, struct timespec end);
  */
 int findKsuseBySID(Ksuse* ksuse_ll, Ksuse* ksuse);
 
+
 Ksuse* getSessDetails(Node* sessInfo, unsigned int* latchFree);
 
 /**
@@ -132,6 +141,7 @@ void updateKsuseMetadata(Ksuse* ksuse, unsigned int* latchFree);
  * @param ksuse
  */
 void printKsuseSummary(Ksuse* ksuse);
+
 
 void printKsuseVerboseLatch(Ksuse* ksuse);
 

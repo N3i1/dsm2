@@ -49,10 +49,7 @@ Node *getMatchingNode(LinkedList *list, COMPARE compare, void *data){
     return NULL;
 }
 
-void displayAllMatchingNodes(LinkedList *list,
-                              COMPARE compare, 
-                              DISPLAY display, 
-                              void *data){
+void displayAllMatchingNodes(LinkedList *list, COMPARE compare, DISPLAY display, void *data){
     Node *node = list->head;
         while (node != NULL){
            if(compare(node->data, data) == 0){
@@ -77,15 +74,16 @@ void addHead(LinkedList *list, void *data){
         }
         list->head = node;
     }
-    
+  
+
 void initList(LinkedList *list){
         list->head = NULL;
         list->head = NULL;
         list->current = NULL;
     }
 
-int CrosscheckNodes(LinkedList *ksuseList, 
-                    LinkedList *pmonMapslist){
+
+int CrosscheckNodes(LinkedList *ksuseList, LinkedList *pmonMapslist){
     Node *ksuseNode = ksuseList->head;
     Node *mmapsNode = pmonMapslist->head;
     AmmInfo* mInfo = NULL;
@@ -103,7 +101,8 @@ int CrosscheckNodes(LinkedList *ksuseList,
     }
     return 0;
 }
-    
+ 
+
 int addMapstoAddySpace(LinkedList *list){
      Node *current = list->head;
     while (current != NULL){
@@ -113,11 +112,28 @@ int addMapstoAddySpace(LinkedList *list){
         current = current->next;
         else{
             printf("Error mapping file");
-            break;
+            return(EXIT_FAILURE);
+            //break;
         }
     }
-    return 0;
+    return(EXIT_SUCCESS);
 }
+
+
+int removeMapsFromAddySpace(LinkedList *list){
+    Node *current = list->head;
+    while (current != NULL){
+        if(unmapFileFromAddr(current->data) == 0){
+            current = current->next;
+        }
+        else {
+            return(EXIT_FAILURE);
+            //break;
+        }
+    }
+    return(EXIT_SUCCESS);
+}
+
 
 void releaseLinkedList(LinkedList *list, RELEASE release){
     Node *current = list->head;
@@ -128,25 +144,28 @@ void releaseLinkedList(LinkedList *list, RELEASE release){
     }
 }
 
+
 void releaseNode(LinkedList *list, Node *node) {
     if (node == list->head) {
         if (list->head->next == NULL) {
             list->head = list->tail = NULL;
-        } else {
+        } 
+        else {
         list->head = list->head->next;
         }
-    } else {
-    Node *tmp = list->head;
-    while (tmp != NULL && tmp->next != node) {
-        tmp = tmp->next;
+    } 
+    else {
+        Node *tmp = list->head;
+        while (tmp != NULL && tmp->next != node) {
+            tmp = tmp->next;
     }
     if (tmp != NULL) {
         tmp->next = node->next;
     }
     }
-    //node = NULL;
-    free(node->data);
+    free(&node->data);
 }
+
 
 int deleteNode(LinkedList *list){
     Node *node = list->head;
@@ -160,11 +179,12 @@ int deleteNode(LinkedList *list){
     return 0;
 }
 
-void deleteNodeInList(LinkedList *list){
+
+int deleteNodeInList(LinkedList *list){
     Node *node = list->head;
     while(node != NULL){
             releaseNode(list, node);
         node = node->next; 
     }
-    //return 0;
+    return(EXIT_SUCCESS);
 }

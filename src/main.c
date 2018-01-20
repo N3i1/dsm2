@@ -81,9 +81,9 @@ int main(int argc, char** argv) {
     //struct timespec end={0,0};
 
     int i = 1;
-    int* latchFree = NULL;
- 
-
+    int latch = 1;
+    int* latchFree = &latch;
+    void *addrBase = NULL;
     
     initList(&ksuse_ll);
     initList(&pmonFileMaps_ll);
@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
     	/*
     	 * Map the file containing the SGA metadata into our address space
     	 * */
-        void *addrBase = NULL;
+        
         addrBase=(void *)shmat(SHMID, (void *)SGA_ADDY, SHM_RDONLY);
             if (addrBase == (void *) -1) {
                 printf("Shmat error: error attaching to SGA\n");
@@ -190,18 +190,22 @@ int main(int argc, char** argv) {
      */
 
     while(1){
-        if (feof(stdin))
+       if (feof(stdin))
             break;
         
         printf(PROMPT);
+        //char *line = "report 23\n";
+        //char *line = "show\n";
+       //char *line="exit\n";
         fflush(stdout);
-        
         fgets(line, sizeof(line), stdin);
         
         char command1[LINE_BUFF], command2[LINE_BUFF];
-        int sid = 0;
-        sscanf(line,"%s %s[^\n]", &command1, &command2);
         
+        int sid = 0;
+        
+        sscanf(line,"%s %s[^\n]", &command1, &command2);
+
         command1[strlen(line)-1] = '\0';
         command2[strlen(line)-1] = '\0';
         
@@ -239,17 +243,21 @@ int main(int argc, char** argv) {
                 /*Retrieve ptr to a node within our linked list which matches our SID*/
                 Node* node = getMatchingNode(&ksuse_ll, (COMPARE)findKsuseBySID, &sid);
                 ksuse = node->data;
-                /*Update and display metadata*/
-                updateKsuseMetadata(ksuse, &latchFree);
-                if (latchFree == 1)
+                /*Update and display metadata
+                 */
+                
+                updateKsuseMetadata(ksuse, latchFree);
+                if (latch == 0){
                     printKsuseVerboseLatch(ksuse);
+                    latch = 1;
+                }
                 else
                     printKsuseVerbose(ksuse);
                 /*Now we go into the reporting loop*/
                 //TODO Ctl-C causing can cause segment fault!
                 while(!stop){
                     do {
-                        updateKsuseMetadata(ksuse, &latchFree);
+                        updateKsuseMetadata(ksuse, latchFree);
                     }
                     /* If SEQ# doesn't change then we know there's not been a 
                      * new event, so we can just keep looping and only catch 
@@ -258,27 +266,23 @@ int main(int argc, char** argv) {
                     while (ksuse->seq == ksuse->pseq);
                         /*Check to ensure our session hasn't ended*/
                         if (ksuse->seq <  ksuse->pseq) {
-                            printf("Session has ended"); 
-                            //TODO Let's not exist, return to prompt
-                            return (EXIT_SUCCESS);
+                            break;
                         }
                         //TODO Allow user to choose delay
-                        if (latchFree == 1)
+                        if (latch == 0){
                             printKsuseVerboseLatch(ksuse);
+                            latch = 1;
+                        }
                         else
                             printKsuseVerbose(ksuse);
                 }
             }
         }
         else if(strcmp(command1, "exit") == 0){
-            //TODO add memory clean up
-            //TODO memory needs freeing for node->data linked lists
-            deleteNodeInList(&ksuse_ll);
-            //deleteNodeInList(&pmonFileMaps_ll);
-            exit(EXIT_SUCCESS);
+            break;
         }
         else if(strcmp(command1, "help") == 0){
-            //showUsage;
+            showUsage;
             continue;
         }
         else{
@@ -288,9 +292,29 @@ int main(int argc, char** argv) {
         }
     }
     
+    /*
+     Cleanup before exiting
+     */
+    if (AMM == 1) {
+        if( removeMapsFromAddySpace(&pmonFileMaps_ll) != 0){
+        printf("Error unmapping AMM");
+        }
+    }
+    else {
+        if( shmdt(addrBase) == -1 ){
+            printf("Error detaching from ASMM");
+        }
+    }
+    
+    if ( deleteNodeInList(&ksuse_ll) != 0){
+        printf("Error unmapping ksuse");
+    }
+    if ( deleteNodeInList(&pmonFileMaps_ll) != 0){
+        printf("Error unmapping pmon files");
+    }
+    printf("Goodbye");
     return (EXIT_SUCCESS);
 }
-//TODO unmap mmeeory mapped files
 
 void sigHandler(int sig) {
 	stop = 1;
