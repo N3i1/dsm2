@@ -163,7 +163,7 @@ void releaseNode(LinkedList *list, Node *node) {
         tmp->next = node->next;
     }
     }
-    free(&node->data);
+    free(node->data);
 }
 
 
