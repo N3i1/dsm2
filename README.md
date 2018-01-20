@@ -18,9 +18,9 @@ through the SGA.
  
 ### SAMPLE OUTPUT
 
-![alt tag](screenshots/dsm2SummaryView.PNG)
+![alt tag](screenshots/dsm2SummaryView.JPG)
 	
-![alt tag](screenshots/dsm2ProfileView.PNG)
+![alt tag](screenshots/dsm2ProfileView.JPG)
 	
 ### NOTES
 	 
