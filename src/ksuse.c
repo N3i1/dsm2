@@ -40,11 +40,11 @@
     #include "12201.h"
 #endif
 
-#define FORMAT_VERBOSE_LATCH "Waiting for event: '%s' P1:'%s'=%lld P2:'%s'=%s P3:%s'=%lld\n\t" \
+#define FORMAT_VERBOSE_LATCH "Waiting for: '%s' P1:'%s'=%lld P2:'%s'=%s P3:%s'=%lld\n\t" \
     "command=%s ospid=%d sqlhv=%u psqlhv=%u Class:%s\n"
 
 
-#define FORMAT_VERBOSE "Waiting for event: '%s' P1:'%s'=%lld P2:'%s'=%lld P3:'%s'=%lld\n\t" \
+#define FORMAT_VERBOSE "Waiting for: '%s' P1:'%s'=%lld P2:'%s'=%lld P3:'%s'=%lld\n\t" \
     "command=%s ospid=%d sqlhv=%u psqlhv=%u Class:%s\n"
 
 
@@ -190,7 +190,7 @@ void updateKsuseMetadata(Ksuse* ksuse, unsigned int* latchFree){
     /*Event class value*/
     ksuse->ksledClassName = *(waitClassGroup + (ksuse->ksledClassid) );
     /*Command*/
-    ksuse->oct = ksuse->addy+KSUUDOCT;
+    ksuse->oct = (ksuse->addy+KSUUDOCT);
     ksuse->octName = *(command + *(ksuse->oct));
     /*OS PID*/
     ksuse->pid = strtol(ksuse->addy+KSUSEPID, NULL, 0);

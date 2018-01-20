@@ -81,8 +81,8 @@ int main(int argc, char** argv) {
     //struct timespec end={0,0};
 
     int i = 1;
-    int lf = 1;
-    int* latchFree = &lf;
+    int latch = 1;
+    int* latchFree = &latch;
     void *addrBase = NULL;
     
     initList(&ksuse_ll);
@@ -190,18 +190,22 @@ int main(int argc, char** argv) {
      */
 
     while(1){
-        if (feof(stdin))
+       if (feof(stdin))
             break;
         
         printf(PROMPT);
+        //char *line = "report 23\n";
+        //char *line = "show\n";
+       //char *line="exit\n";
         fflush(stdout);
-        fflush(stdin);
         fgets(line, sizeof(line), stdin);
         
         char command1[LINE_BUFF], command2[LINE_BUFF];
-        int sid = 0;
-        sscanf(line,"%s %s[^\n]", &command1, &command2);
         
+        int sid = 0;
+        
+        sscanf(line,"%s %s[^\n]", &command1, &command2);
+
         command1[strlen(line)-1] = '\0';
         command2[strlen(line)-1] = '\0';
         
@@ -239,11 +243,13 @@ int main(int argc, char** argv) {
                 /*Retrieve ptr to a node within our linked list which matches our SID*/
                 Node* node = getMatchingNode(&ksuse_ll, (COMPARE)findKsuseBySID, &sid);
                 ksuse = node->data;
-                /*Update and display metadata*/
-                updateKsuseMetadata(ksuse, &latchFree);
-                if (lf == 0){
+                /*Update and display metadata
+                 */
+                
+                updateKsuseMetadata(ksuse, latchFree);
+                if (latch == 0){
                     printKsuseVerboseLatch(ksuse);
-                    lf =1;
+                    latch = 1;
                 }
                 else
                     printKsuseVerbose(ksuse);
@@ -251,7 +257,7 @@ int main(int argc, char** argv) {
                 //TODO Ctl-C causing can cause segment fault!
                 while(!stop){
                     do {
-                        updateKsuseMetadata(ksuse, &latchFree);
+                        updateKsuseMetadata(ksuse, latchFree);
                     }
                     /* If SEQ# doesn't change then we know there's not been a 
                      * new event, so we can just keep looping and only catch 
@@ -260,14 +266,12 @@ int main(int argc, char** argv) {
                     while (ksuse->seq == ksuse->pseq);
                         /*Check to ensure our session hasn't ended*/
                         if (ksuse->seq <  ksuse->pseq) {
-                            printf("Session has ended"); 
-                            //TODO Let's not exist, return to prompt
                             break;
                         }
                         //TODO Allow user to choose delay
-                        if (lf == 0){
+                        if (latch == 0){
                             printKsuseVerboseLatch(ksuse);
-                            lf =1;
+                            latch = 1;
                         }
                         else
                             printKsuseVerbose(ksuse);
