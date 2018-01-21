@@ -4,6 +4,7 @@
 nbproject
 Makefile
 ksuseInfo.h
+*.sql
 
 # Object files
 *.o

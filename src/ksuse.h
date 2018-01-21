@@ -16,17 +16,17 @@
  */
 
 typedef struct _ammInfo {
-        int* ammLowAddy;
-        int* ammHighAddy;
-        char* ammName;
-        int inUse;
+    int* ammLowAddy;
+    int* ammHighAddy;
+    char* ammName;
+    int inUse;
 } AmmInfo;
 
 
 typedef struct maps Mmaps;
 
 
-typedef struct _node Node; 
+typedef struct _node Node;
 
 
 typedef struct _linkedList LinkedList;
@@ -37,43 +37,43 @@ typedef struct _linkedList LinkedList;
  *
  */
 typedef struct _ksuse {
-        int sid;
-	void *addy;
-	unsigned short seq;	
-	unsigned short pseq;  
-	char *unm;
-	unsigned int pid;	
-	char *opc;  
-	short opcnum;	
-	int ksledClassid; 
-	char *ksledClassName; 
-	char* oct;
-        char *octName;
-	char *lna;    
-	char *pnm;	
-	char *opcP1;    
-	long long p1;   
-	char *opcP2; 
-	long long p2;  
-	char *opcP3;   
-	long long p3;    
-	char *latch;
-	long long sql;  
-	unsigned int sqh;
-	long long psq;
-	unsigned int pha;
-	int fil;  
-	long long blk;	   
-	unsigned short slt;   
-	unsigned short obj;
-	int idl;
-        int flg;
-	int lui;    
-        char* state;
-        char* con;
+    int sid;
+    void *addy;
+    unsigned short seq;
+    unsigned short pseq;
+    char *unm;
+    unsigned int pid;
+    char *opc;
+    short opcnum;
+    int ksledClassid;
+    char *ksledClassName;
+    char* oct;
+    char *octName;
+    char *lna;
+    char *pnm;
+    char *opcP1;
+    long long p1;
+    char *opcP2;
+    long long p2;
+    char *opcP3;
+    long long p3;
+    char *latch;
+    long long sql;
+    unsigned int sqh;
+    long long psq;
+    unsigned int pha;
+    int fil;
+    long long blk;
+    unsigned short slt;
+    unsigned short obj;
+    int idl;
+    int flg;
+    int lui;
+    char* state;
+    char* con;
 } Ksuse;
 
- 
+
 void displayAmmMmaps(AmmInfo *mInfo);
 
 
@@ -90,7 +90,7 @@ AmmInfo* AddMaps(Mmaps *maps);
  * @return 
  */
 int compareAddy(Ksuse *s, Mmaps *mInfo);
-  
+
 
 int compareSessionAddy(Ksuse *s1, Ksuse *s2);
 
@@ -155,5 +155,5 @@ void deallocSessStruct(Ksuse* ksuse);
  * 
  * @param ksuse
  */
-void deallocSessNode( Ksuse* ksuse);
+void deallocSessNode(Ksuse* ksuse);
 

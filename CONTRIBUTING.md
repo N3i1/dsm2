@@ -4,7 +4,8 @@ How can I Contribute?
 
 ### Submitting changes
 
- Please raise a pull request
+ Feel free to send a pull request. Or if you rather make a suggestion then please
+either email me, or create an issue.
 
 ### Reporting Bugs
 
@@ -12,7 +13,10 @@ How can I Contribute?
 
 ### Future plans for dsm2
 
- I would love to see a GUI for this!!
+ * Currently working on options for dsm2 to run in the background.
+ * GUI would be nice
+ * Generate graphs
+ * Add more metrics
 
 
 
