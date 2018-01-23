@@ -9,8 +9,8 @@ changeToAMM(){
 changeToAMM=`sqlplus -S / as sysdba << EOF
 	alter system set sga_target=0 scope=spfile;
 	alter system set sga_max_size=0 scope=spfile;
-	alter system set memory_target=1512M scope=spfile;
-	alter system set memory_max_target=1512M scope=spfile;
+	alter system set memory_target=2048M scope=spfile;
+	alter system set memory_max_target=2048M scope=spfile;
  exit
 EOF`
 }
