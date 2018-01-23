@@ -141,7 +141,7 @@ int mapFileToAddr(Mmaps *maps){
 
 
 int unmapFileFromAddr(Mmaps *maps){
-    if(munmap(maps->name, maps->length) == -1){
+    if(munmap(maps->lowAddr, maps->length) == -1){
         return(EXIT_FAILURE);
     }
     else {

@@ -190,25 +190,20 @@ int main(int argc, char** argv) {
      */
 
     while(1){
-       if (feof(stdin))
-            break;
         
         printf(PROMPT);
-        //char *line = "report 23\n";
-        //char *line = "show\n";
-       //char *line="exit\n";
         fflush(stdout);
-        fgets(line, sizeof(line), stdin);
+        if( fgets(line, sizeof(line), stdin) == NULL){
+          printf("Problem with fgets\n");
+          break;
+        }
         
         char command1[LINE_BUFF], command2[LINE_BUFF];
         
         int sid = 0;
         
-        sscanf(line,"%s %s[^\n]", &command1, &command2);
+        sscanf(line,"%s %s", &command1, &command2);
 
-        command1[strlen(line)-1] = '\0';
-        command2[strlen(line)-1] = '\0';
-        
         int flag;
         
         if(strcmp(command1, "show") == 0){
