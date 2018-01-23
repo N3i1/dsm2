@@ -201,10 +201,10 @@ int main(int argc, char** argv) {
      * Step 3: Trim down pmonFileMaps_ll to only the files we need.
      */
 
-    //if (deleteNode(&pmonFileMaps_ll) != 0) {
-    //  printf("Error: Cannot delete Node\n");
-    //  exit(EXIT_FAILURE);
-    //}
+    if (deleteNode(&pmonFileMaps_ll) != 0) {
+      printf("Error: Cannot delete Node\n");
+      exit(EXIT_FAILURE);
+    }
 
     //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
     /*
@@ -230,13 +230,15 @@ int main(int argc, char** argv) {
           
   if (console == 1) {
     while(1) {
-      fflush(stdout);
-
-      printf(PROMPT);
       
+      fflush(stdout);
+      printf(PROMPT);
+      fflush(stdout);
+      //Only seem to have problems with fgets when compiling for AMM
       if ( fgets(line, sizeof(line), stdin) == NULL){
-      break;
-      }
+        printf("Error using fgets\n");
+        break;
+      };
 
       int sid = 0;
     
