@@ -1,0 +1,20 @@
+
+#
+#
+#
+
+Story:
+
+ DBA want to monitor DB for spefic wait events:
+
+Start dsm2 via cmd line and pass in an EVENT to monitor. Dsm2 will then run "report"
+for x amount of time for any session thats see the required WAIT event into a log file
+
+#
+# 
+#
+Story:
+
+ DBA run ps -ef | grep ora
+
+Run dsm2 via cmd line and just pass in the ospid

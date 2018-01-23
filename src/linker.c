@@ -61,7 +61,6 @@ void displayAllMatchingNodes(LinkedList *list, COMPARE compare, DISPLAY display,
 }
 
 void addHead(LinkedList *list, void *data) {
-
   Node *node = (Node*) malloc(sizeof (Node));
   node->data = data;
   if (list->head == NULL) {

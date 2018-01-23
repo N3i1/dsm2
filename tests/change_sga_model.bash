@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#
+# Requires either AMM or ASMM as $1
+#
 export ORAENV_ASK=NO
 
 changeToAMM(){
@@ -24,7 +27,7 @@ EOF`
 
 shutdownDB(){
 	shutdownDB=`sqlplus -S / as sysdba << EOF
-	shutdwon immediate;
+	shutdown immediate;
  exit
 EOF`
 }

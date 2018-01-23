@@ -45,7 +45,6 @@
 #define AMM 0
 #define ASMM 0
 
-
 #if ORA_VER_12101_AMM
 #define AMM 1
 #elif ORA_VER_12102_AMM
@@ -75,10 +74,9 @@ int main(int argc, char** argv) {
 
   int flag1 = 0, flag2 = 0, c;
   char *value1 = NULL;
-  char * line;
   opterr = 0;
   Ksuse *ksuse; /* Struct for metadata, mirrors x$ksuse*/
-  char line[LINE_BUFF];
+
   LinkedList ksuse_ll;
   LinkedList pmonFileMaps_ll;
   //struct timespec start={0,0};
@@ -86,7 +84,8 @@ int main(int argc, char** argv) {
   int i = 1, flag = 0, latch = 1, console = 0, index;
   int* latchFree = &latch;
   void *addrBase = NULL;
-
+  char command1[LINE_BUFF], command2[LINE_BUFF];
+  char line[LINE_BUFF];
   initList(&ksuse_ll);
   initList(&pmonFileMaps_ll);
 
@@ -111,8 +110,8 @@ int main(int argc, char** argv) {
     exit(EXIT_FAILURE);
   }
   /*
-   IF we get to her ethen no args have been passed into the program and t
-   we can dislay the console
+   IF we get to here then no args have been passed into the program and
+   we can display the console
    */
 
   console = 1;
@@ -141,7 +140,7 @@ int main(int argc, char** argv) {
 
   ksuse = NULL;
 
-  //displayALLLinkedList(&ksuse_ll, (DISPLAY)displayKsuseInfo);
+  //displayAllLinkedList(&ksuse_ll, (DISPLAY)displayKsuseInfo);
 
   /*
    * Based of the SGA memory model being used we can attach to the SGA in one
@@ -186,7 +185,7 @@ int main(int argc, char** argv) {
       exit(EXIT_FAILURE);
     }
 
-    //displayALLLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
+    //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
     /*
      * Step 2: Cross check pmonFileMaps_ll against the starting address
      * of each session, if it's within the ADDR range then we set a keep flag.
@@ -197,17 +196,17 @@ int main(int argc, char** argv) {
       exit(EXIT_FAILURE);
     }
 
-    //displayALLLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
+    //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
     /*
      * Step 3: Trim down pmonFileMaps_ll to only the files we need.
      */
 
-    if (deleteNode(&pmonFileMaps_ll) != 0) {
-      printf("Error: Cannot delete Node\n");
-      exit(EXIT_FAILURE);
-    }
+    //if (deleteNode(&pmonFileMaps_ll) != 0) {
+    //  printf("Error: Cannot delete Node\n");
+    //  exit(EXIT_FAILURE);
+    //}
 
-    //displayALLLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
+    //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
     /*
      * Step 4: Map the contents remaining within pmonFileMaps_ll into our
      * processes address space.
@@ -228,30 +227,20 @@ int main(int argc, char** argv) {
    * 
    * Main while loop for console mode
    */
-
+          
   if (console == 1) {
-    while (1) {
-
-      if (feof(stdin))
-        break;
-
-      printf(PROMPT);
-
+    while(1) {
       fflush(stdout);
 
-      fgets(line, sizeof (line), stdin);
-
-      char command1[LINE_BUFF], command2[LINE_BUFF];
+      printf(PROMPT);
+      
+      if ( fgets(line, sizeof(line), stdin) == NULL){
+      break;
+      }
 
       int sid = 0;
-
-      sscanf(line, "%s %s[^\n]", &command1, &command2);
-
-      command1[strlen(line) - 1] = '\0';
-
-      command2[strlen(line) - 1] = '\0';
-
-      
+    
+      sscanf(line, "%s %s", &command1, &command2);
 
       if (strcmp(command1, "show") == 0) {
         if((strcmp(command2, "active") == 0))
@@ -339,7 +328,7 @@ int main(int argc, char** argv) {
    */
   if (AMM == 1) {
     if (removeMapsFromAddySpace(&pmonFileMaps_ll) != 0) {
-      printf("Error unmapping AMM");
+      printf("Error unmapping AMM\n");
     }
   } else {
     if (shmdt(addrBase) == -1) {
