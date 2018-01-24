@@ -218,7 +218,7 @@ int main(int argc, char** argv) {
       exit(EXIT_FAILURE);
     }
 
-    displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
+    //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
     /*
      * Step 4: Map the contents remaining within pmonFileMaps_ll into our
      * processes address space.
@@ -253,8 +253,6 @@ int main(int argc, char** argv) {
       //Only seem to have problems with fgets when compiling for AMM
       if ( fgets(linep, sizeof(linep), stdin) == NULL)
       {
-        char b = getchar();
-        printf("%c\n", b);
         printf("Error using fgets\n");
         break;
       }
