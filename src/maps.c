@@ -34,12 +34,14 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list) {
 
   snprintf(name, sizeof (name), "/proc/%u/maps", target);
 
-  if ((fd = fopen(name, "r")) == NULL) {
+  if ( (fd = fopen(name, "r") ) == NULL) 
+  {
     printf("error");
     return (EXIT_FAILURE);
   }
 
-  while (getline(&line, &len, fd) != -1) {
+  while (getline(&line, &len, fd) != -1) 
+  {
     unsigned long start, end;
     char read, write, exec, cow, *filename;
     int offset, dev_major, dev_minor, inode;
@@ -50,7 +52,8 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list) {
     sscanf(line, "%p-%p %c%c%c%c %x %x:%x %u %[^\n]", &start, &end, &read,
             &write, &exec, &cow, &offset, &dev_major, &dev_minor, &inode, filename);
     match = strstr(filename, "/ora_");
-    if (match != NULL) {
+    if (match != NULL) 
+    {
       maps = (Mmaps*) malloc(sizeof (Mmaps));
       maps->name = malloc(sizeof (maps->name));
       strcpy(maps->name, match);
@@ -62,8 +65,9 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list) {
       //printf("## After AddHead: Node:%p lowAddr:%p, highAddr:%p and filename:%s\n", maps, maps->lowAddr, maps->highAddr, maps->name);
     }
   }
-  if (close(fd == -1)) {
-    printf("Failed to close %s", fd);
+  if ( fclose(fd) == -1) 
+  {
+    printf("Failed to close %i\n", fd);
     return (EXIT_FAILURE);
   }
   return (EXIT_SUCCESS);
