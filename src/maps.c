@@ -134,20 +134,14 @@ int mapFileToAddr(Mmaps *maps) {
   return (EXIT_SUCCESS);
 }
 
-<<<<<<< HEAD
-int unmapFileFromAddr(Mmaps *maps){
-    if(munmap(maps->lowAddr, maps->length) == -1){
-        return(EXIT_FAILURE);
-    }
-    else {
-        return(EXIT_SUCCESS);
-    }
-=======
+
 int unmapFileFromAddr(Mmaps *maps) {
-  if (munmap(maps->lowAddr, maps->length) == -1) {
+  if (munmap(maps->lowAddr, maps->length) == -1) 
+  {
     return (EXIT_FAILURE);
-  } else {
+  } 
+  else 
+  {
     return (EXIT_SUCCESS);
   }
->>>>>>> getop-functionality
 }

@@ -124,19 +124,22 @@ int main(int argc, char** argv) {
    *
    */
 
-  if (ASMM == 1) {
+  if (ASMM == 1) 
+  {
     /*
      * Map the file containing the SGA metadata into our address space
      * 
      */
 
     addrBase = (void *) shmat(SHMID, (void *) SGA_ADDY, SHM_RDONLY);
-    if (addrBase == (void *) - 1) {
+    if (addrBase == (void *) - 1) 
+    {
       printf("Shmat error: error attaching to SGA\n");
       return (EXIT_FAILURE);
     }
   }
-  else if (AMM == 1) {
+  else if (AMM == 1) 
+  {
 
     /*
      * In order to extract the metadata from a database running AMM we need
@@ -154,7 +157,8 @@ int main(int argc, char** argv) {
      * Step 1: Parse and create linked list of key variables
      */
 
-    if (readContentsOfProcessMapsFile(PMON_PID, &pmonFileMaps_ll) != 0) {
+    if (readContentsOfProcessMapsFile(PMON_PID, &pmonFileMaps_ll) != 0) 
+    {
       printf("Error, check pmon number!\n");
       exit(EXIT_FAILURE);
     }
@@ -165,7 +169,8 @@ int main(int argc, char** argv) {
      * of each session, if it's within the ADDR range then we set a keep flag.
      */
 
-    if (CrosscheckNodes(&ksuse_ll, &pmonFileMaps_ll) != 0) {
+    if (CrosscheckNodes(&ksuse_ll, &pmonFileMaps_ll) != 0) 
+    {
       printf("Error: CrosscheckNodes has failed\n");
       exit(EXIT_FAILURE);
     }
@@ -175,108 +180,10 @@ int main(int argc, char** argv) {
      * Step 3: Trim down pmonFileMaps_ll to only the files we need.
      */
 
-<<<<<<< HEAD
-    while(1){
-        
-        printf(PROMPT);
-        fflush(stdout);
-        if( fgets(line, sizeof(line), stdin) == NULL){
-          printf("Problem with fgets\n");
-          break;
-        }
-        
-        char command1[LINE_BUFF], command2[LINE_BUFF];
-        
-        int sid = 0;
-        
-        sscanf(line,"%s %s", &command1, &command2);
-
-        int flag;
-        
-        if(strcmp(command1, "show") == 0){
-            /*if((strcmp(command2, "active") == 0))
-                flag = 1;
-            else if((strcmp(command2, "inactive") == 0))
-            	flag = 2;
-            else{
-            	/*By default we will show ALL session
-            	flag =0;
-            }*/
-
-            printf(FORMAT_SUMMARY_TITLE, "SID", "EVENT", "PROGRAM", "OSPID", "STATUS", "CONTAINER");
-
-            updateLinkedList(&ksuse_ll, (UPDATE)updateKsuseMetadata, &latchFree);
-
-            //TODO Add in flag handler to handle command2
-            displayAllLinkedList(&ksuse_ll, (DISPLAY)printKsuseSummary);
-        }
-        else if(strcmp(command1, "report") == 0){
-            int sid = atoi(command2);
-            if(sid == 0){
-                printf("Please specify a SID, report <SID>\n");
-                continue;
-            }
-            else{
-                /*
-                 * Set signal handler: CTL-C will return us back to dsm2 prompt
-                 * and not exit the program
-                 */
-                signal(SIGINT, sigHandler);
-                /*Retrieve ptr to a node within our linked list which matches our SID*/
-                Node* node = getMatchingNode(&ksuse_ll, (COMPARE)findKsuseBySID, &sid);
-                ksuse = node->data;
-                /*Update and display metadata
-                 */
-                
-                updateKsuseMetadata(ksuse, latchFree);
-                if (latch == 0){
-                    printKsuseVerboseLatch(ksuse);
-                    latch = 1;
-                }
-                else
-                    printKsuseVerbose(ksuse);
-                /*Now we go into the reporting loop*/
-                //TODO Ctl-C causing can cause segment fault!
-                while(!stop){
-                    do {
-                        updateKsuseMetadata(ksuse, latchFree);
-                    }
-                    /* If SEQ# doesn't change then we know there's not been a 
-                     * new event, so we can just keep looping and only catch 
-                     * changes
-                     */
-                    while (ksuse->seq == ksuse->pseq);
-                        /*Check to ensure our session hasn't ended*/
-                        if (ksuse->seq <  ksuse->pseq) {
-                            break;
-                        }
-                        //TODO Allow user to choose delay
-                        if (latch == 0){
-                            printKsuseVerboseLatch(ksuse);
-                            latch = 1;
-                        }
-                        else
-                            printKsuseVerbose(ksuse);
-                }
-            }
-        }
-        else if(strcmp(command1, "exit") == 0){
-            break;
-        }
-        else if(strcmp(command1, "help") == 0){
-            showUsage;
-            continue;
-        }
-        else{
-            //TODO create/show helper function
-        	//TODO CTL-C handling
-            continue;
-        }
-=======
-    if (deleteNode(&pmonFileMaps_ll) != 0) {
+    if (deleteNode(&pmonFileMaps_ll) != 0) 
+    {
       printf("Error: Cannot delete Node\n");
       exit(EXIT_FAILURE);
->>>>>>> getop-functionality
     }
 
     //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
@@ -285,12 +192,14 @@ int main(int argc, char** argv) {
      * processes address space.
      */
 
-    if (addMapstoAddySpace(&pmonFileMaps_ll) != 0) {
+    if (addMapstoAddySpace(&pmonFileMaps_ll) != 0) 
+    {
       printf("Error mapping files into addy space\n");
       exit(EXIT_FAILURE);
     }
   }
-  else {
+  else 
+  {
     printf("Error: Unknown SGA memory type\n");
     exit(EXIT_FAILURE);
   }
@@ -302,7 +211,8 @@ int main(int argc, char** argv) {
    * Main while loop for console mode
    */
 
-  while (1) {
+  while (1) 
+  {
     fflush(stdout);
     printf("dsm2:>");
 
@@ -316,12 +226,14 @@ int main(int argc, char** argv) {
 
     sscanf(linep, "%s %s", &command1, &command2);
 
-    if (strcmp(command1, "show") == 0) {
+    if (strcmp(command1, "show") == 0) 
+    {
       if ((strcmp(command2, "active") == 0))
         flag = 1;
       else if ((strcmp(command2, "inactive") == 0))
         flag = 2;
-      else {
+      else 
+      {
         //By default we will show ALL session
         flag = 0;
       }
@@ -333,15 +245,19 @@ int main(int argc, char** argv) {
       //TODO Add in flag handler to handle command2
       displayAllLinkedList(&ksuse_ll, (DISPLAY) printKsuseSummary);
 
-    } else if (strcmp(command1, "report") == 0) {
+    } 
+    else if (strcmp(command1, "report") == 0) 
+    {
 
       int sid = atoi(command2);
 
-      if (sid == 0) {
+      if (sid == 0) 
+      {
         printf("Please specify a SID, report <SID>\n");
         continue;
       }
-      else {
+      else 
+      {
         /*
          * Set signal handler: CTL-C will return us back to dsm2 prompt
          * and not exit the program
@@ -355,37 +271,45 @@ int main(int argc, char** argv) {
          */
 
         updateKsuseMetadata(ksuse, latchFree);
-        if (latch == 0) {
+        if (latch == 0) 
+        {
           printKsuseVerboseLatch(ksuse);
           latch = 1;
         }
-        else {
+        else 
+        {
           printKsuseVerbose(ksuse);
         }
         /*Now we go into the reporting loop*/
         //TODO Ctl-C causing can cause segment fault!
-        while (!stop) {
-          do {
+        while (!stop) 
+        {
+          do 
+          {
             updateKsuseMetadata(ksuse, latchFree);
           }/* If SEQ# doesn't change then we know there's not been a 
                 new event, so we can just keep looping and only catch 
                 changes
               */ while (ksuse->seq == ksuse->pseq);
           /*Check to ensure our session hasn't ended*/
-          if (ksuse->seq < ksuse->pseq) {
+          if (ksuse->seq < ksuse->pseq) 
+          {
             break;
           }
           //TODO Allow user to choose delay
-          if (latch == 0) {
+          if (latch == 0) 
+          {
             printKsuseVerboseLatch(ksuse);
             latch = 1;
           } else
             printKsuseVerbose(ksuse);
         }
       }
-    } else if (strcmp(command1, "exit") == 0) {
+    } else if (strcmp(command1, "exit") == 0) 
+    {
       break;
-    } else if (strcmp(command1, "help") == 0) {
+    } else if (strcmp(command1, "help") == 0) 
+    {
       showUsage;
       continue;
     } else {
