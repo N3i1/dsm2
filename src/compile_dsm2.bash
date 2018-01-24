@@ -147,10 +147,10 @@ initAMM(){
 generate_init(){
 	findDBVersion
 	getDBMemoryModel
-	if [[ SGA_MEM="ASMM" ]]; then
+	if [[ $SGA_MEM == "ASMM" ]]; then
 		initASMM
 	
-	elif [[ SGA_MEM="AMM" ]]; then
+	elif [[ $SGA_MEM == "AMM" ]]; then
 		initAMM
 	else
 		printf "%s\n" "Unsupported SGA version "

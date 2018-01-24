@@ -79,7 +79,7 @@ int CrosscheckNodes(LinkedList *sessionlist, LinkedList *pmonMapslist);
  * @param   display   Function pointer (DISPLAY).
  * 
  */
-void displayALLLinkedList(LinkedList *list, DISPLAY display);
+void displayAllLinkedList(LinkedList *list, DISPLAY display);
 
 /**
  * Adds data into list

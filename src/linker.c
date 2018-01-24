@@ -21,170 +21,160 @@
 #include "linker.h"
 #include "ksuse.h"
 
-
-void updateLinkedList(LinkedList *list, UPDATE update, unsigned int* latchFree){
-	Node *current = list->head;
-	while (current != NULL){
-		update(current->data);
-	    current = current->next;
-	}
+void updateLinkedList(LinkedList *list, UPDATE update, unsigned int* latchFree) {
+  Node *current = list->head;
+  while (current != NULL) {
+    update(current->data);
+    current = current->next;
+  }
 }
 
-void displayAllLinkedList(LinkedList *list, DISPLAY display){
-    Node *current = list->head;
-    while (current != NULL){
-        display(current->data);
-        current = current->next;
-    }
+void displayAllLinkedList(LinkedList *list, DISPLAY display) {
+  Node *current = list->head;
+  while (current != NULL) {
+    display(current->data);
+    current = current->next;
+  }
 }
 
-Node *getMatchingNode(LinkedList *list, COMPARE compare, void *data){
-    Node *node = list->head;
-    while (node != NULL){
-        if (compare(node->data, data) == 0){
-            return node;
-        }
-        node = node->next;
+Node *getMatchingNode(LinkedList *list, COMPARE compare, void *data) {
+  Node *node = list->head;
+  while (node != NULL) {
+    if (compare(node->data, data) == 0) {
+      return node;
     }
-    return NULL;
+    node = node->next;
+  }
+  return NULL;
 }
 
-void displayAllMatchingNodes(LinkedList *list, COMPARE compare, DISPLAY display, void *data){
-    Node *node = list->head;
-        while (node != NULL){
-           if(compare(node->data, data) == 0){
-                display(node->data);
-                node = node->next;
-            }
-            else{
-                node = node->next; 
-            }
-        }
+void displayAllMatchingNodes(LinkedList *list, COMPARE compare, DISPLAY display, void *data) {
+  Node *node = list->head;
+  while (node != NULL) {
+    if (compare(node->data, data) == 0) {
+      display(node->data);
+      node = node->next;
+    } else {
+      node = node->next;
     }
+  }
+}
 
-void addHead(LinkedList *list, void *data){
-        Node *node = (Node*) malloc(sizeof(Node));
-        node->data = data;
-        if(list->head == NULL){
-            list->tail = node;
-            node->next = NULL;
-        }
-        else{
-            node->next = list->head;
-        }
-        list->head = node;
-    }
-  
+void addHead(LinkedList *list, void *data) {
+  Node *node = (Node*) malloc(sizeof (Node));
+  node->data = data;
+  if (list->head == NULL) {
+    list->tail = node;
+    node->next = NULL;
+  } else {
+    node->next = list->head;
+  }
+  list->head = node;
+}
 
-void initList(LinkedList *list){
-        list->head = NULL;
-        list->head = NULL;
-        list->current = NULL;
-    }
+void initList(LinkedList *list) {
+  list->head = NULL;
+  list->head = NULL;
+  list->current = NULL;
+}
 
-
-int CrosscheckNodes(LinkedList *ksuseList, LinkedList *pmonMapslist){
-    Node *ksuseNode = ksuseList->head;
+int CrosscheckNodes(LinkedList *ksuseList, LinkedList *pmonMapslist) {
+  Node *ksuseNode = ksuseList->head;
+  //Node *mmapsNode = pmonMapslist->head;
+  AmmInfo* mInfo = NULL;
+  int found = 0;
+  while (ksuseNode != NULL) {
     Node *mmapsNode = pmonMapslist->head;
-    AmmInfo* mInfo = NULL;
-    int found = 0;
-    while (ksuseNode != NULL){
-        while(mmapsNode != NULL){
-            if(compareAddy(ksuseNode->data, mmapsNode->data) == 0){
-                //Add a flag into Mmaps *maps to say KEEP a record
-                setKeep(mmapsNode->data);
-                break;
-            }
-            mmapsNode = mmapsNode->next; 
-        }
-        ksuseNode = ksuseNode->next;
+    while (mmapsNode != NULL) {
+      if (compareAddy(ksuseNode->data, mmapsNode->data) == 0) {
+        //Add a flag into Mmaps *maps to say KEEP a record
+        setKeep(mmapsNode->data);
+        found++;
+        break;
+      }
+      mmapsNode = mmapsNode->next;
     }
-    return 0;
-}
- 
-
-int addMapstoAddySpace(LinkedList *list){
-     Node *current = list->head;
-    while (current != NULL){
-        int chk =0;
-        chk = mapFileToAddr(current->data);
-        if(chk == 0)
-        current = current->next;
-        else{
-            printf("Error mapping file");
-            return(EXIT_FAILURE);
-            //break;
-        }
-    }
-    return(EXIT_SUCCESS);
+    ksuseNode = ksuseNode->next;
+  }
+  return 0;
 }
 
-
-int removeMapsFromAddySpace(LinkedList *list){
-    Node *current = list->head;
-    while (current != NULL){
-        if(unmapFileFromAddr(current->data) == 0){
-            current = current->next;
-        }
-        else {
-            return(EXIT_FAILURE);
-            //break;
-        }
+int addMapstoAddySpace(LinkedList *list) {
+  Node *current = list->head;
+  while (current != NULL) {
+    int chk = 0;
+    chk = mapFileToAddr(current->data);
+    if (chk == 0)
+      current = current->next;
+    else {
+      printf("Error mapping file");
+      return (EXIT_FAILURE);
+      //break;
     }
-    return(EXIT_SUCCESS);
+  }
+  return (EXIT_SUCCESS);
 }
 
-
-void releaseLinkedList(LinkedList *list, RELEASE release){
-    Node *current = list->head;
-    while (current != NULL){
-        release(current->data);
-        free(list->head);
-        current = current->next;
+int removeMapsFromAddySpace(LinkedList *list) {
+  Node *current = list->head;
+  while (current != NULL) {
+    if (unmapFileFromAddr(current->data) == 0) {
+      current = current->next;
+    } else {
+      return (EXIT_FAILURE);
+      //break;
     }
+  }
+  return (EXIT_SUCCESS);
 }
 
+void releaseLinkedList(LinkedList *list, RELEASE release) {
+  Node *current = list->head;
+  while (current != NULL) {
+    release(current->data);
+    free(list->head);
+    current = current->next;
+  }
+}
 
 void releaseNode(LinkedList *list, Node *node) {
-    if (node == list->head) {
-        if (list->head->next == NULL) {
-            list->head = list->tail = NULL;
-        } 
-        else {
-        list->head = list->head->next;
-        }
-    } 
+  if (node == list->head) {
+    if (list->head->next == NULL) {
+      list->head = list->tail = NULL;
+    }
     else {
-        Node *tmp = list->head;
-        while (tmp != NULL && tmp->next != node) {
-            tmp = tmp->next;
+      list->head = list->head->next;
+    }
+  }
+  else {
+    Node *tmp = list->head;
+    while (tmp != NULL && tmp->next != node) {
+      tmp = tmp->next;
     }
     if (tmp != NULL) {
-        tmp->next = node->next;
+      tmp->next = node->next;
     }
-    }
-    free(node->data);
+  }
+  free(node->data);
 }
 
+int deleteNode(LinkedList *list) {
+  Node *node = list->head;
+  while (node != NULL) {
+    if ((isKeepSet(node->data)) != 0) {
+      releaseNode(list, node);
 
-int deleteNode(LinkedList *list){
-    Node *node = list->head;
-    while(node != NULL){
-        if((isKeepSet(node->data)) != 0){
-            releaseNode(list, node);
-            
-        }
-        node = node->next; 
     }
-    return 0;
+    node = node->next;
+  }
+  return 0;
 }
 
-
-int deleteNodeInList(LinkedList *list){
-    Node *node = list->head;
-    while(node != NULL){
-            releaseNode(list, node);
-        node = node->next; 
-    }
-    return(EXIT_SUCCESS);
+int deleteNodeInList(LinkedList *list) {
+  Node *node = list->head;
+  while (node != NULL) {
+    releaseNode(list, node);
+    node = node->next;
+  }
+  return (EXIT_SUCCESS);
 }
