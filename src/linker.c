@@ -80,14 +80,16 @@ void initList(LinkedList *list) {
 
 int CrosscheckNodes(LinkedList *ksuseList, LinkedList *pmonMapslist) {
   Node *ksuseNode = ksuseList->head;
-  Node *mmapsNode = pmonMapslist->head;
+  //Node *mmapsNode = pmonMapslist->head;
   AmmInfo* mInfo = NULL;
   int found = 0;
   while (ksuseNode != NULL) {
+    Node *mmapsNode = pmonMapslist->head;
     while (mmapsNode != NULL) {
       if (compareAddy(ksuseNode->data, mmapsNode->data) == 0) {
         //Add a flag into Mmaps *maps to say KEEP a record
         setKeep(mmapsNode->data);
+        found++;
         break;
       }
       mmapsNode = mmapsNode->next;

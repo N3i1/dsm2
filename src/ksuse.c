@@ -89,18 +89,22 @@ int compareSessionAddy(Ksuse *s1, Ksuse *s2) {
 }
 
 int compareAddy(Ksuse *s, Mmaps *mInfo) {
-  if (s->addy >= mInfo->lowAddr && s->addy <= mInfo->highAddr) {
+  if ( s->longAddy >= mInfo->lowAddr && s->longAddy <= mInfo->highAddr)
+  {
     //printf("Session:%p\n", s->addy);
     //printf("Match found %s\n", mInfo->name);
     return 0;
-  } else
+  } 
+  else
+  {
     return -1;
+  }
 }
 
 void displayKsuseInfo(Ksuse *s) {//, AmmInfo *mInfo){
   //if(a_option  == NULL){
   //if (s->seq > 0) { 
-  printf("addy:%p\n", s->addy);
+  printf("addy:%p longAddy:%ul\n", s->addy, s->longAddy);
   // printSessSumView(s);                              
   //}
   /*else if (strcmp(a_option, "ACTIVE") == 0) { 

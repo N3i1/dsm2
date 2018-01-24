@@ -39,6 +39,7 @@ typedef struct _linkedList LinkedList;
 typedef struct _ksuse {
     int sid;
     void *addy;
+    unsigned long longAddy;
     unsigned short seq;
     unsigned short pseq;
     char *unm;
