@@ -210,7 +210,6 @@ int main(int argc, char** argv) {
    * 
    * Main while loop for console mode
    */
-
   while (1) 
   {
     fflush(stdout);
@@ -340,7 +339,8 @@ int main(int argc, char** argv) {
     printf("Error unmapping pmon files");
   }
 
-  printf("We hope dsm2 proved useful, goodbye");
+    free(ksuse);
+    free(addrBase);
 
   return (EXIT_SUCCESS);
 }
