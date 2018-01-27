@@ -23,6 +23,20 @@
 #include "memmaps.h"
 #include "list.h"
 
+#if ORA_VER_12101_AMM
+ #include "12101.h"
+#elif ORA_VER_12102_AMM
+ #include "12102.h"
+#elif ORA_VER_12201_AMM
+ #include "12201.h"
+#elif ORA_VER_12101_ASMM
+ #include "12101.h"
+#elif ORA_VER_12102_ASMM
+ #include "12102.h"
+#elif ORA_VER_12201_ASMM
+ #include "12201.h"
+#endif
+
 void initKsuse(Ksuse* ksuse) {
   ksuse->sid = 0;
   ksuse->addy = NULL;
@@ -67,8 +81,15 @@ int compareAddy(Ksuse *ksuse, Mmaps *maps) {
   }
 }
 
-void displayKsuseInfo(Ksuse *ksuse) {//, AmmInfo *mInfo){
-  //if(a_option  == NULL){
-  //if (s->seq > 0) { 
+void displayKsuseInfo(Ksuse *ksuse) {
   printf("addy:%p longAddy:%ul\n", ksuse->addy, ksuse->longAddy);
   }
+
+int findKsuseBySID(Ksuse* ksuse_ll, Ksuse* ksuse) {
+  if (ksuse_ll->sid == ksuse->sid) {
+    return(EXIT_SUCCESS);
+  } 
+  else {
+    return(EXIT_FAILURE);
+  }
+}

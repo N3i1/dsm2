@@ -58,3 +58,4 @@ typedef struct _maps Mmaps;
 void initKsuse(Ksuse* ksuse);
 int compareAddy(Ksuse *ksuse, Mmaps *maps);
 void displayKsuseInfo(Ksuse *ksuse);
+int findKsuseBySID(Ksuse* ksuse_ll, Ksuse* ksuse);

@@ -19,6 +19,7 @@
 #include <string.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <signal.h>
 
 #include "list.h"
 #include "memmaps.h"
@@ -36,12 +37,31 @@
 #define AMM 1
 #define ASMM 0
 
+#if ORA_VER_12101_AMM
+  #define AMM 1
+#elif ORA_VER_12102_AMM
+  #define AMM 1
+#elif ORA_VER_12201_AMM
+  #define AMM 1
+#elif ORA_VER_12101_ASMM
+  #define ASMM 1
+#elif ORA_VER_12102_ASMM
+  #define ASMM 1
+#elif ORA_VER_12201_ASMM
+  #define ASMM 1
+#endif
+
+void sigHandler(int sig);
+void showUsage();
+
+volatile sig_atomic_t stop;
+
 int main(int argc, char** argv) {
 
   char prompt[LINE_BUFF], command1[LINE_BUFF], command2[LINE_BUFF];
-  int i = 1;
+  int i = 1, reportId = 0, latch = 0;
   void *addrBase = NULL;
-  Ksuse *ksuse;
+  Ksuse *ksuse, *reportUser;
 
   LinkedList ksuse_ll;
   LinkedList pmonFileMaps_ll;
@@ -73,90 +93,126 @@ int main(int argc, char** argv) {
    
   
 
-  if ( ASMM == 1 )
-  {
+  if ( ASMM == 1 ) {
     addrBase = (void *) shmat(SHMID, (void *)SGA_ADDY, SHM_RDONLY );
-    if ( addrBase == (void *) -1 )
-    {
+
+    if ( addrBase == (void *) -1 ) {
       printf("Shmat error: Issue attachin to SGA_ADDY: %p \n", SGA_ADDY);
       return(EXIT_FAILURE);
     }
   }
-  else if ( AMM == 1)
-  {
-    if ( readContentsOfProcessMapsFile(PMON_PID, &pmonFileMaps_ll ) != 0 ) 
-    {
+  else if ( AMM == 1) {
+    if ( readContentsOfProcessMapsFile(PMON_PID, &pmonFileMaps_ll ) != 0 ) {
       printf("Error, check pmon number!\n");
       exit(EXIT_FAILURE);
     }
    //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
-    if ( crosscheckPmonAddy(&ksuse_ll, &pmonFileMaps_ll) != 0 ) 
-    {
+    if ( crosscheckPmonAddy(&ksuse_ll, &pmonFileMaps_ll) != 0 ) {
       printf("Error: Cross checking of memory addresses has failed\n");
       exit(EXIT_FAILURE);
     }
     //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
-    if ( removeNoneMatchedNodes(&pmonFileMaps_ll) != 0 ) 
-    {
+    if ( removeNoneMatchedNodes(&pmonFileMaps_ll) != 0 ) {
       printf("Error: Cannot delete Node\n");
       exit(EXIT_FAILURE);
     }
-    displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
+    //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
   }
 
-  while (1)
-  {
+  while (1) {
     fflush(stdout);
     printf(PROMPT);
 
-    if ( fgets(prompt, sizeof(prompt), stdin) == NULL )
-    {
+    if ( fgets(prompt, sizeof(prompt), stdin) == NULL ) {
       printf("Error using fgets\n");
       exit(EXIT_FAILURE);
     }
     
     sscanf(prompt, "%s %s", &command1, &command2);
 
-    if (strcmp(command1, "show") == 0) 
-    {
+    if (strcmp(command1, "show") == 0) {
       printf("run show\n");
     } 
-    else if (strcmp(command1, "report") == 0) 
-    {
+    else if (strcmp(command1, "report") == 0) {
       printf("run report\n");
-      continue;
+      reportId = atoi(command2);
+      if ( reportId == 0 ) {
+        printf("Plese enter SID\n");
+        continue;
+      }
+      /*
+      Set signal handler: CTL-C will return us back to dsm2 prompt
+      and not exit the program
+      */
+      signal(SIGINT, sigHandler);
+      /*Retrieve ptr to a node within our linked list which matches our SID*/
+      Node* node = getMatchingNode(&ksuse_ll, (COMPARE)findKsuseBySID, &reportId);
+      reportUser = node->data;
+      /*Now we go into the reporting loop*/
+      /*while (!stop) {
+      
+        do {
+            printf("Update ksuse\n");
+        }
+          //If SEQ# doesn't change then we know there's not been a new event
+           
+          while (ksuse->seq == ksuse->pseq);
+
+          //Check to ensure our session hasn't ended
+        if (ksuse->seq < ksuse->pseq) {
+          break;
+        }
+        if ( latch == 0 ) {
+          
+          latch = 1;
+        } 
+        else {
+            continue;
+        }
+      }*/
     }
-    else if (strcmp(command1, "exit") == 0) 
-      {
+    else if (strcmp(command1, "exit") == 0) {
         break;
-      } 
-    else if (strcmp(command1, "help") == 0) 
-    {
+    } 
+    else if (strcmp(command1, "help") == 0) {
       printf("run help\n");
       continue;
     } 
-    else 
-    {
+    else {
       printf("run help, nothing entered");
       continue;
     }
   }
-    
-  if ( deleteAllNodesInList(&pmonFileMaps_ll, (REMOVE) releaseNodeMmaps) != 0 )
-  {
+
+  /*
+    Memory cleanup
+  */
+  free(ksuse);
+  if ( deleteAllNodesInList(&pmonFileMaps_ll, (REMOVE) releaseNodeMmaps) != 0 ) {
     printf("Error unmapping pmon files");
   }
     
-  if ( deleteAllNodesInList(&ksuse_ll, (REMOVE) releaseNodeKsuse) != 0 )
-  {
+  if ( deleteAllNodesInList(&ksuse_ll, (REMOVE) releaseNodeKsuse) != 0 ) {
       printf("Error unmapping ksuse struct");
   }
 
-  free(ksuse);
+
+
 
 return (EXIT_SUCCESS);
 
 }
 
 
+void sigHandler(int sig) {
+  stop = 1;
+}
 
+void showUsage() {
+  printf("Show session summary:\n");
+  printf("\tshow active || inactive || default is ALL\n");
+  printf("Report on specific session. This shows a very detailed view");
+  printf("report SID");
+  printf("To exit:\n");
+  printf("exit || ctl-c");
+}

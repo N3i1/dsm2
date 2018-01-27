@@ -33,6 +33,7 @@ typedef struct _ammInfo AmmInfo;
  */
 typedef void(*DISPLAY)(void*);
 typedef void(*REMOVE)(void*);
+typedef int(*COMPARE)(void*, void*);
 
 
 void addHead(LinkedList *list, void *data);

@@ -24,7 +24,7 @@
 
 #include "memmaps.h"
 
-int readContentsOfProcessMapsFile(int target, LinkedList *list){
+int readContentsOfProcessMapsFile(int target, LinkedList *list) {
   
   FILE *fd; // /proc/<target>/maps
   char name[128], *line = NULL, *match = NULL;
@@ -37,20 +37,20 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list){
   
   snprintf(name, sizeof (name), "/proc/%u/maps", target);
   
-  if ( (fd = fopen(name, "r") ) == NULL) 
-  {
+  if ( (fd = fopen(name, "r") ) == NULL ) {
     printf("error");
     return (EXIT_FAILURE);
   }
   
-  while( getline(&line, &len, fd) != -1) 
-  {
+  while( getline(&line, &len, fd) != -1) {
+
     filename = realloc(filename, len);
 
     sscanf(line, "%p-%p %c%c%c%c %x %x:%x %u %[^\n]", &start, &end, &read,
             &write, &exec, &cow, &offset, &dev_major, &dev_minor, &inode, filename);
     
     match = strstr(filename, "/ora_");
+
     if( match != NULL ) {
 
       maps = (Mmaps*) malloc(sizeof(Mmaps));
@@ -69,8 +69,7 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list){
     }
   }
   
-  if ( fclose(fd) == -1 ) 
-  {
+  if ( fclose(fd) == -1 ) {
     printf("Failed to close\n");
     return (EXIT_FAILURE);
   }
