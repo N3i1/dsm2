@@ -1,3 +1,19 @@
+/* This file is part of dsm2.
+ *
+ * Dsm2 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Dsm2 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with dsm2.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,7 +43,8 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list){
     return (EXIT_FAILURE);
   }
   
-  while( getline(&line, &len, fd) != -1) {
+  while( getline(&line, &len, fd) != -1) 
+  {
     filename = realloc(filename, len);
 
     sscanf(line, "%p-%p %c%c%c%c %x %x:%x %u %[^\n]", &start, &end, &read,
@@ -48,7 +65,6 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list){
       maps->highAddr = end;
       maps->keep = 0;
       maps->length = 0;
-
       addHead(list, maps);
     }
   }
@@ -71,11 +87,30 @@ void releaseNodeMmaps(Mmaps *maps) {
 }
 
 void releaseNodeKsuse(Ksuse *ksuse) {
-  free(ksuse);
+  return 0;
 }
 
 
 void displayMmaps(Mmaps *maps) {
   printf("## keep: %d lowAddr:%p, highAddr:%p and filename:%s\n",
           maps->keep, maps->lowAddr, maps->highAddr, maps->fileName);
+}
+
+
+void setKeep(Mmaps *maps) {
+  maps->keep = 1;
+}
+
+
+int isKeepSet(Mmaps *maps) {
+  if (maps->keep == 1) 
+  {
+    //printf("keep: %d lowAddr:%p, highAddr:%p\n", mInfo->keep, mInfo->lowAddr, mInfo->highAddr);
+    return (EXIT_SUCCESS);
+  } 
+  else 
+  {
+    return (EXIT_FAILURE);
+    //printf("Remove: %d Addr:%p\n", mInfo->keep, mInfo);
+  }
 }

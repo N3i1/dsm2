@@ -17,30 +17,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 #include "list.h"
 #include "memmaps.h"
 #include "ksuse.h"
 
+#include "ksuseInfo.h"
+
 #define LINE_BUFF 20
 #define PROMPT "dsm2:>"
-#define PMON_PID 2974
+#define PMON_PID 3211
 
-const int *users[]={
-0x0000000073EC55E0,
-0x0000000073EC3028,
-0x0000000073EC0A70,
-0x0000000073EBE4B8,
-0x0000000073EBBF00,
-0x0000000073EB9948,
-0x0000000073EB7390,
-0x0000000073EB4DD8,
-0x0};
+#define SHMID 0
+#define SGA_ADDY 0
+ 
+#define AMM 1
+#define ASMM 0
 
 int main(int argc, char** argv) {
-  
+
   char prompt[LINE_BUFF], command1[LINE_BUFF], command2[LINE_BUFF];
-  int i;
+  int i = 1;
+  void *addrBase = NULL;
   Ksuse *ksuse;
 
   LinkedList ksuse_ll;
@@ -53,8 +53,7 @@ int main(int argc, char** argv) {
    * Build linked list from KsuseInfo.h
    */
 
-  while ( *(users + i) != NULL ) 
-  {
+  while ( *(users + i) != NULL ) {
     /*create struct for each session within the database*/
     ksuse = (Ksuse*) malloc(sizeof (Ksuse));
     /*Set the values within the struct to defaults*/
@@ -69,21 +68,42 @@ int main(int argc, char** argv) {
     i++;
   }
 
+  //displayAllLinkedList(&ksuse_ll, (DISPLAY)displayKsuseInfo);
   ksuse = NULL;
    
-  if ( readContentsOfProcessMapsFile(PMON_PID, &pmonFileMaps_ll ) != 0 ) 
+  
+
+  if ( ASMM == 1 )
   {
+    addrBase = (void *) shmat(SHMID, (void *)SGA_ADDY, SHM_RDONLY );
+    if ( addrBase == (void *) -1 )
+    {
+      printf("Shmat error: Issue attachin to SGA_ADDY: %p \n", SGA_ADDY);
+      return(EXIT_FAILURE);
+    }
+  }
+  else if ( AMM == 1)
+  {
+    if ( readContentsOfProcessMapsFile(PMON_PID, &pmonFileMaps_ll ) != 0 ) 
+    {
       printf("Error, check pmon number!\n");
       exit(EXIT_FAILURE);
-  }
-   // displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
-  if ( CrosscheckNodes(&ksuse_ll, &pmonFileMaps_ll) != 0 ) 
-  {
-      printf("Error: CrosscheckNodes has failed\n");
+    }
+   //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
+    if ( crosscheckPmonAddy(&ksuse_ll, &pmonFileMaps_ll) != 0 ) 
+    {
+      printf("Error: Cross checking of memory addresses has failed\n");
       exit(EXIT_FAILURE);
+    }
+    //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
+    if ( removeNoneMatchedNodes(&pmonFileMaps_ll) != 0 ) 
+    {
+      printf("Error: Cannot delete Node\n");
+      exit(EXIT_FAILURE);
+    }
+    displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
   }
 
-  
   while (1)
   {
     fflush(stdout);
@@ -122,17 +142,17 @@ int main(int argc, char** argv) {
     }
   }
     
-  if (deleteAllNodesInList(&pmonFileMaps_ll, (REMOVE) releaseNodeMmaps) != 0)
-    {
-        printf("Error unmapping pmon files");
-    }
+  if ( deleteAllNodesInList(&pmonFileMaps_ll, (REMOVE) releaseNodeMmaps) != 0 )
+  {
+    printf("Error unmapping pmon files");
+  }
     
-    if (deleteAllNodesInList(&ksuse_ll, (REMOVE) releaseNodeMmaps) != 0)
-    {
-        printf("Error unmapping ksuse struct");
-    }
+  if ( deleteAllNodesInList(&ksuse_ll, (REMOVE) releaseNodeKsuse) != 0 )
+  {
+      printf("Error unmapping ksuse struct");
+  }
 
-    free(ksuse);
+  free(ksuse);
 
 return (EXIT_SUCCESS);
 
