@@ -9,8 +9,13 @@ Direct SGA access without SQL for Oracle RDBMS
 	
 ### WHAT IS DSM2?
 	
-A light weight cli which enables DBA's to list/trace any session in real time directly 
-through the SGA. 
+A light weight command line interface which enables you to:
+
+* List all sessions 
+* Retrive detailed wait event metadata
+* Set a listener to only report when a certian wait event has been triggered.
+
+This is all done in real time directly from memory which means zero load within the database. 
 
 ### ON WHAT OS, ORACLE RELEASE DOES IT RUN?
 
@@ -30,7 +35,10 @@ Running "report SID" you can get more detailed metrics:
  * You only need to re-run initdsm2.bsh to recompile dsm2 after the database is bounced/restarted
  * DBNAME implies the INSTANCE_NAME of the Container DB.
  * From 12.2 onwards, by default only the Oracle software owner can connect to the SGA mapped file
- 
+ * You can set a "listen" on any wait event found by querying:
+    ```sql
+    select NAME from v$event_name;
+    ``` 
 ### INSTALLING
 
 * extract dsm2 
@@ -75,20 +83,15 @@ dsm2:> help
 dsm2:> show
 ```
 
-* Show only active sessions
-```bash
-dsm2:> show active
-```
-
- * Show only INACTIVE sessions
-```bash
-dsm2:> show inactive
-```
-
  * Show detailed stats for a given session
 ```bash
 dsm2:> report <SID>
 ```
+
+ * Set listener to report only for a specifc wait event
+ ```bash
+dsm2:> listen "buffer busy waits"
+ ```
 
 ### LICENCE
 
