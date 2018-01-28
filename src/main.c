@@ -120,6 +120,10 @@ int main(int argc, char** argv) {
       }
     //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
    }
+   else {
+    printf("Unsupported memory model");
+    exit(EXIT_FAILURE);
+   }
    
    while (1) {
       char prompt[LINE_BUFF] = {}, command1[LINE_BUFF] ={}, command2[LINE_BUFF] ={};
@@ -131,7 +135,8 @@ int main(int argc, char** argv) {
          printf("Error using fgets\n");
          break;
       }
-      sscanf(prompt, "%s %[^\n]*c", &command1, &command2);
+      char fq, lq;
+      sscanf(prompt, "%s %c %[^\n]*s %c", &command1, &fq, &command2, &lq);
       //sscanf(prompt, "%s %s", &command1, &command2);
 
       if ( strcmp(command1, "show") == 0 ) {
@@ -142,7 +147,7 @@ int main(int argc, char** argv) {
          displayAllLinkedList(&ksuse_ll, (DISPLAY) printKsuseSummary);
       }
       else if (strcmp(command1, "report") == 0) {
-         reportId = atoi(command2);
+         reportId = atoi(&fq);
          if ( reportId == 0 ) {
             printf("Plese enter SID\n");
             continue;
