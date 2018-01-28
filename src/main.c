@@ -121,8 +121,8 @@ int main(int argc, char** argv) {
     //displayAllLinkedList(&pmonFileMaps_ll, (DISPLAY)displayMmaps);
    }
    else {
-    printf("Unsupported memory model");
-    exit(EXIT_FAILURE);
+      printf("Unsupported memory model");
+      exit(EXIT_FAILURE);
    }
    
    while (1) {
