@@ -34,6 +34,7 @@ typedef struct _ammInfo AmmInfo;
 typedef void(*DISPLAY)(void*);
 typedef void(*REMOVE)(void*);
 typedef int(*COMPARE)(void*, void*);
+typedef void(*UPDATE)(void*);
 
 
 void addHead(LinkedList *list, void *data);
@@ -51,3 +52,5 @@ int removeNoneMatchedNodes(LinkedList *list) ;
 void releaseNode(LinkedList *list, Node *node);
 
 Node* getNode(LinkedList *list, void* data);
+
+int addMapstoAddySpace(LinkedList *list);
