@@ -136,8 +136,7 @@ int main(int argc, char** argv) {
          break;
       }
       char fq, lq;
-      sscanf(prompt, "%s %c %[^\n]*s %c", &command1, &fq, &command2, &lq);
-      //sscanf(prompt, "%s %s", &command1, &command2);
+      sscanf(prompt, "%s %c %[^\"]*s %c", &command1, &fq, &command2, &lq);
 
       if ( strcmp(command1, "show") == 0 ) {
          printf(FORMAT_SUMMARY_TITLE, "SID", "EVENT", "PROGRAM", "OSPID", "STATUS", "CONTAINER");
@@ -252,10 +251,10 @@ void sigHandler(int sig) {
 void showUsage() {
    printf("Show session summary:\n");
    printf("\tshow \n");
-   printf("Report on specific session. This shows a very detailed view");
-   printf("\treport SID");
-   printf("Report only for specific wait event");
-   printf("\tlisten \"wait event name\" ");
+   printf("Report on specific session. This shows a very detailed view\n");
+   printf("\treport SID\n");
+   printf("Report only for specific wait event\n");
+   printf("\tlisten \"wait event name\"\n ");
    printf("To exit:\n");
-   printf("exit || ctl-c");
+   printf("exit || ctl-c\n");
 }
