@@ -219,11 +219,11 @@ int main(int argc, char** argv) {
          break;
       } 
       else if ( strcmp(command1, "help" ) == 0) {
-         printf("run help\n");
+         showUsage();
          continue;
       } 
       else {
-         printf("run help, nothing entered");
+         printf("run help, nothing entered\n");
          continue;
       }
    }
@@ -251,9 +251,11 @@ void sigHandler(int sig) {
 
 void showUsage() {
    printf("Show session summary:\n");
-   printf("\tshow active || inactive || default is ALL\n");
+   printf("\tshow \n");
    printf("Report on specific session. This shows a very detailed view");
-   printf("report SID");
+   printf("\treport SID");
+   printf("Report only for specific wait event");
+   printf("\tlisten "<wait event name>" ");
    printf("To exit:\n");
    printf("exit || ctl-c");
 }
