@@ -255,7 +255,7 @@ void showUsage() {
    printf("Report on specific session. This shows a very detailed view");
    printf("\treport SID");
    printf("Report only for specific wait event");
-   printf("\tlisten "<wait event name>" ");
+   printf("\tlisten \"wait event name\" ");
    printf("To exit:\n");
    printf("exit || ctl-c");
 }
