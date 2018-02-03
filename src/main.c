@@ -58,6 +58,7 @@ int main(int argc, char** argv) {
    int i = 1, reportId = 0, latch = 0;
    int *latchFree = &latch;
    void *addrBase = NULL;
+   char fq, lq;
    Ksuse *ksuse;
 
    LinkedList ksuse_ll;
@@ -126,27 +127,26 @@ int main(int argc, char** argv) {
    }
    
    while (1) {
-      char prompt[LINE_BUFF] = {}, command1[LINE_BUFF] ={}, command2[LINE_BUFF] ={};
+
+      char prompt[LINE_BUFF] = {}, command1[LINE_BUFF] = {}, command2[LINE_BUFF] = {};
       
       fflush(stdout);
       printf(PROMPT);
-
+      
       if ( fgets(prompt, sizeof(prompt), stdin) == NULL ) {
          printf("Error using fgets\n");
          break;
       }
-      char fq, lq;
-      sscanf(prompt, "%s %c %[^\"]*s %c", &command1, &fq, &command2, &lq);
 
-      if ( strcmp(command1, "show") == 0 ) {
-         printf(FORMAT_SUMMARY_TITLE, "SID", "EVENT", "PROGRAM", "OSPID", "STATUS", "CONTAINER");
-
-         updateLinkedList(&ksuse_ll, (UPDATE)updateKsuseMetadata, &latchFree);
-
-         displayAllLinkedList(&ksuse_ll, (DISPLAY) printKsuseSummary);
+      if ( sscanf(prompt, "%s", &command1) == EOF ) {
+         fprintf(stderr,  "%s", "Error reading command1");
+         exit(EXIT_FAILURE);
       }
-      else if (strcmp(command1, "report") == 0) {
-         reportId = atoi(&fq);
+
+      if ( strcmp(command1, "report") == 0 ) {
+
+         sscanf(prompt, "%s %d", &command1, &reportId);
+
          if ( reportId == 0 ) {
             printf("Plese enter SID\n");
             continue;
@@ -187,16 +187,29 @@ int main(int argc, char** argv) {
          }
          stop = 0;
       }
+      else if ( strcmp(command1, "show") == 0 ) {
+
+         printf(FORMAT_SUMMARY_TITLE, "SID", "EVENT", "PROGRAM", "OSPID", "STATUS", "CONTAINER");
+
+         updateLinkedList(&ksuse_ll, (UPDATE)updateKsuseMetadata, &latchFree);
+
+         displayAllLinkedList(&ksuse_ll, (DISPLAY) printKsuseSummary);
+      } 
       else if( strcmp(command1, "listen" ) == 0) {
+
+         sscanf(prompt, "%s %c %[^\"]*s %c", &command1, &fq, &command2, &lq);
+
           /*
          Set signal handler: CTL-C will return us back to dsm2 prompt
          and not exit the program
          */
+
          signal(SIGINT, sigHandler);
+
          while (!stop) {
             updateLinkedList(&ksuse_ll, (UPDATE)updateKsuseMetadata, &latchFree);
             Node* node = getMatchingNode(&ksuse_ll, (COMPARE)findListenFor, &command2);
-            if( node != NULL ){
+            if( node != NULL ) {
                ksuse = node->data;
                int h = 0;
                for(h=0; h < 5; h++){
@@ -214,10 +227,10 @@ int main(int argc, char** argv) {
          }
          stop = 0;
       }
-      else if ( strcmp(command1, "exit" ) == 0) {
+      else if ( strcmp(command1, "exit" ) == 0 ) {
          break;
       } 
-      else if ( strcmp(command1, "help" ) == 0) {
+      else if ( strcmp(command1, "help" ) == 0 ) {
          showUsage();
          continue;
       } 
