@@ -55,7 +55,7 @@ volatile sig_atomic_t stop;
 
 int main(int argc, char** argv) {
 
-   int i = 1, reportId = 0, latch = 0, count =0;
+   int i = 1, reportId = 0, latch = 0;
    int *latchFree = &latch;
    void *addrBase = NULL;
    char fq, lq;
@@ -134,22 +134,18 @@ int main(int argc, char** argv) {
       printf(PROMPT);
       
       if ( fgets(prompt, sizeof(prompt), stdin) == NULL ) {
-        pintf("Error using fgets\n");
+         printf("Error using fgets\n");
          break;
       }
 
-      if ( sscanf(prompt, "%s", &command1) == EOF || != 1 ) {
-        fprintf(stderr,  "%s", "Error reading command1 from stdin");
-        exit(EXIT_FAILURE);
+      if ( sscanf(prompt, "%s", &command1) == EOF ) {
+         fprintf(stderr,  "%s", "Error reading command1");
+         exit(EXIT_FAILURE);
       }
 
       if ( strcmp(command1, "report") == 0 ) {
 
-        count = sscanf(prompt, "%s %d", &command1, &reportId);
-        if( count != 2 ) {
-          fprintf(stderr,  "%s", "Error reading report input");
-          exit(EXIT_FAILURE);
-         }
+         sscanf(prompt, "%s %d", &command1, &reportId);
 
          if ( reportId == 0 ) {
             printf("Plese enter SID\n");
@@ -201,12 +197,8 @@ int main(int argc, char** argv) {
       } 
       else if( strcmp(command1, "listen" ) == 0) {
 
-        count = sscanf(prompt, "%s %c %[^\"]*s %c", &command1, &fq, &command2, &lq);
-        
-        if( count != 4 ) {
-          fprintf(stderr,  "%s", "Error reading listen input");
-          exit(EXIT_FAILURE);
-         }  
+         sscanf(prompt, "%s %c %[^\"]*s %c", &command1, &fq, &command2, &lq);
+
           /*
          Set signal handler: CTL-C will return us back to dsm2 prompt
          and not exit the program
