@@ -27,6 +27,7 @@
 int readContentsOfProcessMapsFile(int target, LinkedList *list) {
   
    FILE *fd; // /proc/<target>/maps
+   int count;
    char name[128], *line = NULL, *match = NULL;
    size_t len = 0;
    char* filename = NULL;
@@ -45,8 +46,12 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list) {
    while( getline(&line, &len, fd) != -1) {
       filename = realloc(filename, len);
 
-      sscanf(line, "%p-%p %c%c%c%c %x %x:%x %u %[^\n]", &start, &end, &read, 
+      count = sscanf(line, "%p-%p %c%c%c%c %x %x:%x %u %[^\n]", &start, &end, &read, 
          &write, &exec, &cow, &offset, &dev_major, &dev_minor, &inode, filename);
+      if ( count != 11 ){
+          fprintf(stderr,  "%s", "Error reading sscanf within readContentsOfProcessMapsFile");
+          exit(EXIT_FAILURE);
+      }
     
       match = strstr(filename, "/ora_");
 
