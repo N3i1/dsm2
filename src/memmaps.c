@@ -27,13 +27,12 @@
 int readContentsOfProcessMapsFile(int target, LinkedList *list) {
   
    FILE *fd; // /proc/<target>/maps
-   int count;
    char name[128], *line = NULL, *match = NULL;
    size_t len = 0;
    char* filename = NULL;
    unsigned long start, end;
    char read, write, exec, cow;
-   int offset, dev_major, dev_minor, inode;
+   int offset, dev_major, dev_minor, inode, count;
    Mmaps *maps = NULL;
   
    snprintf(name, sizeof (name), "/proc/%u/maps", target);
@@ -44,20 +43,21 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list) {
    }
   
    while( getline(&line, &len, fd) != -1) {
+      count = 0;
       filename = realloc(filename, len);
 
       count = sscanf(line, "%p-%p %c%c%c%c %x %x:%x %u %[^\n]", &start, &end, &read, 
          &write, &exec, &cow, &offset, &dev_major, &dev_minor, &inode, filename);
-      if ( count != 11 ){
-          fprintf(stderr,  "%s", "Error reading sscanf within readContentsOfProcessMapsFile");
-          exit(EXIT_FAILURE);
-      }
+      if ( count != 11 )
+        continue;
+        
+      printf("%d file: %s\n", count, filename);
     
       match = strstr(filename, "/ora_");
 
       if( match != NULL ) {
 
-         maps = (Mmaps*) malloc(sizeof(Mmaps));
+         maps = malloc(sizeof(Mmaps));
          /*
          Address 0x51fa838 is 0 bytes after a block of size 8 alloc'd 
          Address 0x51fa842 is 10 bytes after a block of size 8 alloc'd
