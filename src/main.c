@@ -134,11 +134,11 @@ int main(int argc, char** argv) {
       printf(PROMPT);
       
       if ( fgets(prompt, sizeof(prompt), stdin) == NULL ) {
-        pintf("Error using fgets\n");
+        printf("Error using fgets\n");
          break;
       }
 
-      if ( sscanf(prompt, "%s", &command1) == EOF || != 1 ) {
+      if ( sscanf(prompt, "%s", &command1) == EOF ) {
         fprintf(stderr,  "%s", "Error reading command1 from stdin");
         exit(EXIT_FAILURE);
       }
