@@ -148,7 +148,7 @@ int main(int argc, char** argv) {
         count = sscanf(prompt, "%s %d", &command1, &reportId);
         if( count != 2 ) {
           fprintf(stderr,  "%s", "Error reading report input");
-          exit(EXIT_FAILURE);
+          break;
          }
 
          if ( reportId == 0 ) {
@@ -205,7 +205,7 @@ int main(int argc, char** argv) {
         
         if( count != 4 ) {
           fprintf(stderr,  "%s", "Error reading listen input");
-          exit(EXIT_FAILURE);
+          break;
          }  
           /*
          Set signal handler: CTL-C will return us back to dsm2 prompt
