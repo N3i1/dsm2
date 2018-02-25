@@ -50,20 +50,21 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list) {
          &write, &exec, &cow, &offset, &dev_major, &dev_minor, &inode, filename);
       if ( count != 11 )
         continue;
-        
-      printf("%d file: %s\n", count, filename);
     
       match = strstr(filename, "/ora_");
 
       if( match != NULL ) {
 
-         maps = malloc(sizeof(Mmaps));
+         maps = (Mmaps*) malloc(sizeof(Mmaps));
          /*
          Address 0x51fa838 is 0 bytes after a block of size 8 alloc'd 
          Address 0x51fa842 is 10 bytes after a block of size 8 alloc'd
          Added char 8 to fileName...
          */
-         maps->fileName = malloc(sizeof(match)*(char)+8);  
+         maps->fileName = malloc(strlen(filename));
+         //printf("filename: %d\n", sizeof(filename));
+         //printf("maps-filname: %d\n", sizeof(maps->fileName));
+         //maps->fileName = malloc(sizeof(match)*(char)+8);  
          strcpy(maps->fileName, match);
          maps->lowAddr = start;
          maps->highAddr = end;
