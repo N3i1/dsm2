@@ -203,7 +203,7 @@ int main(int argc, char** argv) {
 
         count = sscanf(prompt, "%s %c %[^\"]*s %c", &command1, &fq, &command2, &lq);
         
-        if( count != 4 ) {
+        if( count != 3 ) {
           fprintf(stderr,  "%s", "Error reading listen input");
           break;
          }  
