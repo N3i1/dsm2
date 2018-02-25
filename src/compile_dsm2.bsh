@@ -188,7 +188,7 @@ generate_init
 
 ORACLE_VERSION=${VERSION}_${SGA_MEM}
 if [[ $? == 0 ]];then
-    gcc -w main.c list.c memmaps.c ksuse.c -D ${ORACLE_VERSION} -o  dsm2.${DBNAME} -lrt
+    gcc -g -w main.c list.c memmaps.c ksuse.c -D ${ORACLE_VERSION} -o  dsm2.${DBNAME} -lrt
 else
     printf "Error creating DSM2"
 fi
