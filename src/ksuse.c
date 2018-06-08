@@ -95,7 +95,7 @@ int compareAddy(Ksuse *ksuse, Mmaps *maps) {
 }
 
 void displayKsuseInfo(Ksuse *ksuse) {
-   printf("addy:%p longAddy:%ul\n", ksuse->addy, ksuse->longAddy);
+   printf("Addy:%p longAddy:%lu\n", ksuse->addy, ksuse->longAddy);
 }
 
 int findKsuseBySID(Ksuse* ksuse_ll, Ksuse* ksuse) {

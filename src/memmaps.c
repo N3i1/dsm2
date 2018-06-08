@@ -35,7 +35,7 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list) {
    int offset, dev_major, dev_minor, inode, count;
    Mmaps *maps = NULL;
   
-   snprintf(name, sizeof (name), "/proc/%u/maps", target);
+   snprintf(name, sizeof(name), "/proc/%u/maps", target);
   
    if ( (fd = fopen(name, "r") ) == NULL ) {
       printf("error");
