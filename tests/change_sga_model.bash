@@ -26,15 +26,15 @@ EOF`
 }
 
 shutdownDB(){
-	shutdownDB=`sqlplus -S / as sysdba << EOF
-	shutdown immediate;
+    shutdownDB=`sqlplus -S / as sysdba << EOF
+    shutdown immediate;
  exit
 EOF`
 }
 
 startupDB(){
-	startupDB=`sqlplus -S / as sysdba << EOF
-	startup;
+    startupDB=`sqlplus -S / as sysdba << EOF
+    startup;
  exit
 EOF`
 }

@@ -66,10 +66,12 @@ int deleteAllNodesInList(LinkedList *list, REMOVE remove) {
 
 int crosscheckPmonAddy(LinkedList *ksuseList, LinkedList *pmonMapslist) {
    Node *ksuseNode = ksuseList->head;
-   AmmInfo* mInfo = NULL;
+   //AmmInfo* mInfo = NULL;
+   Node *mmapsNode = NULL;
    int found = 0;
    while (ksuseNode != NULL) {
-      Node *mmapsNode = pmonMapslist->head;
+     //Ensure we start form the top of pmonMapsList each time to avoid missing one
+      mmapsNode = pmonMapslist->head;
 
       while (mmapsNode != NULL) {
          if ( compareAddy(ksuseNode->data, mmapsNode->data) == 0) {

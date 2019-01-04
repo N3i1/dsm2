@@ -32,10 +32,10 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list) {
    char* filename = NULL;
    unsigned long start, end;
    char read, write, exec, cow;
-   int offset, dev_major, dev_minor, inode;
+   int offset, dev_major, dev_minor, inode, count;
    Mmaps *maps = NULL;
   
-   snprintf(name, sizeof (name), "/proc/%u/maps", target);
+   snprintf(name, sizeof(name), "/proc/%u/maps", target);
   
    if ( (fd = fopen(name, "r") ) == NULL ) {
       printf("error");
@@ -43,10 +43,13 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list) {
    }
   
    while( getline(&line, &len, fd) != -1) {
+      count = 0;
       filename = realloc(filename, len);
 
-      sscanf(line, "%p-%p %c%c%c%c %x %x:%x %u %[^\n]", &start, &end, &read, 
+      count = sscanf(line, "%p-%p %c%c%c%c %x %x:%x %u %[^\n]", &start, &end, &read, 
          &write, &exec, &cow, &offset, &dev_major, &dev_minor, &inode, filename);
+      if ( count != 11 )
+        continue;
     
       match = strstr(filename, "/ora_");
 
@@ -58,7 +61,10 @@ int readContentsOfProcessMapsFile(int target, LinkedList *list) {
          Address 0x51fa842 is 10 bytes after a block of size 8 alloc'd
          Added char 8 to fileName...
          */
-         maps->fileName = malloc(sizeof(match)*(char)+8);  
+         maps->fileName = malloc(strlen(filename));
+         //printf("filename: %d\n", sizeof(filename));
+         //printf("maps-filname: %d\n", sizeof(maps->fileName));
+         //maps->fileName = malloc(sizeof(match)*(char)+8);  
          strcpy(maps->fileName, match);
          maps->lowAddr = start;
          maps->highAddr = end;
